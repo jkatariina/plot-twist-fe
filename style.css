@@ -6,10 +6,10 @@
   --color-bg: #faf8f5;
   --color-bg-alt: #f0ebe3;
   --color-surface: #ffffff;
-  --color-primary: #2d5a3d;
+  --color-primary: #244931;
   --color-primary-hover: #3d7451;
-  --color-accent: #c9a227;
-  --color-accent-hover: #d4b03a;
+  --color-accent: #c87023;
+  --color-accent-hover: #ff9c45;
   --color-text: #2c2c2c;
   --color-text-muted: #6b6b6b;
   --color-border: #e5e0d8;
@@ -117,7 +117,7 @@ body {
       rgba(0, 0, 0, 0.5),
       rgba(0, 0, 0, 0.4)
     ),
-    url("public/hakim.png");
+    url("");
   background-size: cover;
   background-position: center;
   color: #fff;
