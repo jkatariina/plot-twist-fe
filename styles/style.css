@@ -6,8 +6,8 @@
   --color-bg: #faf8f5;
   --color-bg-alt: #f0ebe3;
   --color-surface: #ffffff;
-  --color-primary: #244931;
-  --color-primary-hover: #3d7451;
+  --color-primary: #274e35;
+  --color-primary-hover: #36724c;
   --color-accent: #c87023;
   --color-accent-hover: #ff9c45;
   --color-text: #2c2c2c;
@@ -67,24 +67,97 @@ body {
   color: var(--color-primary-hover);
 }
 
-.nav-links {
+#menu-toggle {
+  display: none;
+}
+
+.menu-icon {
+  position: fixed;
+  top: 25px;
+  right: 15px;
+  z-index: 200;
   display: flex;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menu-icon i {
+  font-size: 24px;
+}
+
+.menu-icon .close {
+  display: none;
+}
+
+#menu-toggle:checked + .menu-icon .hamburger {
+  display: none;
+}
+
+#menu-toggle:checked + .menu-icon .close {
+  display: block;
+}
+
+.nav-links {
+  display: none;
+  position: fixed;
+  top: 68px;
+  right: 0;
+  width: 100%;
+  height: calc(100vh - 68px);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  padding-top: 20px;
   list-style: none;
-  padding: 0;
   margin: 0;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding-left: 0;
+}
+
+#menu-toggle:checked ~ .nav-links {
+  display: flex;
 }
 
 .nav-links a {
   text-decoration: none;
+  text-align: center;
   color: var(--color-text);
   font-weight: 500;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  display: block;
 }
 
 .nav-links a:hover {
-  color: var(--color-primary);
+  background: var(--color-bg-alt);
+}
+
+.nav-links a.add-plant {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.nav-links a.add-plant:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (min-width: 768px) {
+  .menu-icon {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex !important;
+    position: static;
+    height: auto;
+    width: auto;
+    flex-direction: row;
+    gap: 1.5rem;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+  }
 }
 
 /* Main Content */

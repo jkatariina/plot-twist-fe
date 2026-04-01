@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Plot Twist</title>
     <link rel="stylesheet" href="/styles/style.css"/>
     <link rel="stylesheet" href="/styles/index.css"/>
@@ -11,11 +12,17 @@
 
     <!-- HEADER -->
     <header class="site-header">
-      <nav>
+      <nav class="nav">
         <a href="index.html" class="logo">Plot Twist</a>
+        <input type="checkbox" id="menu-toggle"/>
+        <label for="menu-toggle" class="menu-icon">
+          <i class="fa-solid fa-bars hamburger"></i>
+          <i class="fa-solid fa-xmark close"></i>
+        </label>
         <ul class="nav-links">
+          <li><a href="/add-plant" class="add-plant">Add plant</a></li>
+          <li><a href="/auth.html">Log in</a></li>
           <li><a href="/map">Map</a></li>
-          <li><a href="/add-plant">Add plant</a></li>
           <li><a href="/profile">Profile</a></li>
         </ul>
       </nav>
