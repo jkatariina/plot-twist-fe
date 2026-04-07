@@ -12,7 +12,7 @@ if (!errorMessage) {
     errorMessage.classList.add("error-message");
     errorMessage.style.display = "none";
 
-    loginBtn.insertAdjacentElement("afterend", errorMessage);
+    loginBtn && loginBtn.insertAdjacentElement("afterend", errorMessage);
 }
 
 function setErrorMessage(message) {
@@ -26,7 +26,7 @@ function setErrorMessage(message) {
     errorMessage.style.display = "block";
 }
 
-loginBtn.addEventListener("click", async (e) => {
+loginBtn && loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     setErrorMessage("");
@@ -59,7 +59,7 @@ loginBtn.addEventListener("click", async (e) => {
         localStorage.setItem("token", data.token);
 
         setErrorMessage("");
-        window.location.href = "/profile";
+        window.location.href = "/map";
 
     } catch (error) {
         console.error("LOGIN ERROR:", error);

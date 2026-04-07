@@ -32,12 +32,12 @@
         <main class="main-content">
             <section class="auth-container register">
                 <!-- SIGN UP FORM -->
-                <div class="auth-box">
+                <form class="auth-box">
                     <h2>Sign up</h2>
-                    <input id="fullnameInput" type="text" placeholder="Full name">
-                    <input id="usernameInput" type="text" placeholder="Username">
-                    <input id="emailInput" type="text" placeholder="Email">
-                    <input id="passwordInput" type="password" placeholder="Password">
+                    <input id="fullnameInput" type="text" placeholder="Full name" autocomplete="Name">
+                    <input id="usernameInput" type="text" placeholder="Username" autocomplete="username">
+                    <input id="emailInput" type="text" placeholder="Email" autocomplete="email">
+                    <input id="passwordInput" type="password" placeholder="Password" autocomplete="password">
                         <div class="terms">
                         <input type="checkbox" id="terms" name="terms" required>
                         <label for="terms">
@@ -49,7 +49,7 @@
                         </label>
                         </div>                   
                     <button id="submitBtn" class="submit-btn">Submit</button>
-                </div>
+                </form>
             </section>
         </main>
 
