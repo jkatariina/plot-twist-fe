@@ -21,7 +21,7 @@
             </label>
             <ul class="nav-links">
             <li><a href="/add-plant" class="add-plant">Add plant</a></li>
-            <li><a href="/auth.html" class="auth-link">Log in</a></li>
+            <li><a href="/login.html" class="auth-link">Log in</a></li>
             <li><a href="/map">Map</a></li>
             <li><a href="/profile">Profile</a></li>
             </ul>
@@ -30,26 +30,36 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
-            <section class="auth-container">
-                <!-- LOGIN FORM -->
+            <section class="auth-container register">
+                <!-- SIGN UP FORM -->
                 <div class="auth-box">
-                    <h2>Log into Plot Twist</h2>
-                    <input type="text" placeholder="Username">
-                    <input type="password" placeholder="Password">
-                    <button id="loginBtn" class="login-btn">Log in</button>
-                    <a href="/forgot-password.html" class="auth-link">Forgot password?</a>
-                    <a href="/register.html" class="auth-link">Create new account</a>
+                    <h2>Sign up</h2>
+                    <input id="fullnameInput" type="text" placeholder="Full name">
+                    <input id="usernameInput" type="text" placeholder="Username">
+                    <input id="emailInput" type="text" placeholder="Email">
+                    <input id="passwordInput" type="password" placeholder="Password">
+                        <div class="terms">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">
+                            By registering, I accept
+                            <a href="/terms" target="_blank">Plot Twist's Terms and Conditions</a>
+                            and have read the
+                            <a href="/privacy" target="_blank">Privacy Policy</a>,
+                            and confirm I am at least 18 years old.
+                        </label>
+                        </div>                   
+                    <button id="submitBtn" class="submit-btn">Submit</button>
                 </div>
             </section>
         </main>
 
         <!-- FOOTER -->
         <footer class="site-footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Plot Twist. All rights reserved.</p>
-            <div class="footer-links">
+            <div class="footer-content">
+                <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+                <div class="footer-links">
+                </div>
             </div>
-        </div>
         </footer>
 
         <!-- PAGE-SPECIFIC JAVASCRIPT -->
