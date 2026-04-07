@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <title>Plot Twist</title>
+        <link rel="stylesheet" href="/styles/style.css"/>
+        <link rel="stylesheet" href="/styles/auth.css"/>
+    </head>
+    <body>
+
+        <!-- HEADER -->
+        <header class="site-header">
+        <nav class="nav">
+            <a href="index.html" class="logo">Plot Twist</a>
+            <input type="checkbox" id="menu-toggle"/>
+            <label for="menu-toggle" class="menu-icon">
+            <i class="fa-solid fa-bars hamburger"></i>
+            <i class="fa-solid fa-xmark close"></i>
+            </label>
+            <ul class="nav-links">
+            <li><a href="/add-plant" class="add-plant">Add plant</a></li>
+            <li><a href="/login.html" class="auth-link">Log in</a></li>
+            <li><a href="/map">Map</a></li>
+            <li><a href="/profile">Profile</a></li>
+            </ul>
+        </nav>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <section class="auth-container login">
+                <!-- LOGIN FORM -->
+                <div class="auth-box">
+                    <h2>Log into Plot Twist</h2>
+                    <input id="emailInput" type="text" placeholder="Email">
+                    <input id="passwordInput" type="password" placeholder="Password">
+                    <button id="loginBtn" class="login-btn">Log in</button>
+                    <a href="/forgot-password.html" class="login-link">Forgot password?</a>
+                    <a href="/register.html" class="register-link">Create new account</a>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+                <div class="footer-links">
+                </div>
+            </div>
+        </footer>
+
+        <!-- PAGE-SPECIFIC JAVASCRIPT -->
+        <script type="module" src="./src/scripts/auth.js"></script>
+    </body>
+</html>
