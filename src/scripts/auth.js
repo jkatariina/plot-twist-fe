@@ -1,71 +1,46 @@
 import { login } from "../utils/authApi.js";
+import { setToken, isLoggedIn } from "../state/authState.js";
 
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
-const loginBtn = document.getElementById("loginBtn");
-
-let errorMessage = document.getElementById("errorMessage");
-
-if (!errorMessage) {
-    errorMessage = document.createElement("p");
-    errorMessage.id = "errorMessage";
-    errorMessage.classList.add("error-message");
-    errorMessage.style.display = "none";
-
-    loginBtn && loginBtn.insertAdjacentElement("afterend", errorMessage);
+if (isLoggedIn()) {
+    window.location.href = "/map.html";
 }
 
-function setErrorMessage(message) {
-    if (!message) {
-        errorMessage.textContent = "";
-        errorMessage.style.display = "none";
-        return;
-    }
+const emailInput = document.querySelector("#emailInput");
+const passwordInput = document.querySelector("#passwordInput");
+const loginBtn = document.querySelector("#loginBtn");
 
-    errorMessage.textContent = message;
-    errorMessage.style.display = "block";
+let error = document.querySelector("#errorMessage");
+
+if (!error) {
+    error = document.createElement("p");
+    error.id = "errorMessage";
+    error.classList.add("error-message");
+    loginBtn.insertAdjacentElement("afterend", error);
 }
 
-loginBtn && loginBtn.addEventListener("click", async (e) => {
+function setError(msg) {
+    error.textContent = msg || "";
+}
+
+loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-
-    setErrorMessage("");
 
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
     if (!email || !password) {
-        setErrorMessage("Please fill in both email and password");
+        setError("Fill in all fields");
         return;
     }
-
-    loginBtn.disabled = true;
 
     try {
         const data = await login(email, password);
 
-        console.log("LOGIN RESPONSE:", data);
+        setToken(data.token);
 
-        if (data?.error || data?.message) {
-            setErrorMessage("Wrong email or password");
-            return;
-        }
-
-        if (!data?.token) {
-            setErrorMessage("Wrong email or password");
-            return;
-        }
-
-        localStorage.setItem("token", data.token);
-
-        setErrorMessage("");
         window.location.href = "/map.html";
 
-    } catch (error) {
-        console.error("LOGIN ERROR:", error);
-
-        setErrorMessage("Something went wrong. Try again.");
-    } finally {
-        loginBtn.disabled = false;
+    } catch (err) {
+        setError(err.message);
     }
 });

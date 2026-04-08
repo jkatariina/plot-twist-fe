@@ -1,4 +1,4 @@
-import { getBaseUrl } from "./api.js";
+import { getBaseUrl } from "../utils/api.js";
 
 export async function login(email, password) {
     const url = new URL("auth/login", getBaseUrl());
@@ -14,9 +14,7 @@ export async function login(email, password) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        return {
-            error: data.message || "Wrong email or password"
-        };
+        throw new Error(data.message || "Login failed");
     }
 
     return data;

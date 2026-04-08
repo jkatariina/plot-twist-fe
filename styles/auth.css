@@ -6,15 +6,14 @@ h2 {
 
 /* Login */
 
-.auth-container.login {
+.main-content {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-surface);
-    padding: 1rem 3rem;
 }
 
-.auth-box {
+
+.login-form {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -39,7 +38,7 @@ h2 {
     font-size: 1rem;
     padding: 0.5rem;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 10px;
 }
 
 .login-btn:hover {
@@ -68,7 +67,7 @@ h2 {
 }
 
 @media (min-width: 768px) {
-    .auth-box {
+    .login-form {
         padding: 2rem 4rem;
         gap: 2.5rem;
     }
@@ -91,13 +90,6 @@ h2 {
 
 /* Register */
 
-.auth-container.register {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color-surface);
-    padding: 1rem 3rem;
-}
 
 .auth-container.register input {
     border: none;
@@ -136,7 +128,7 @@ h2 {
     background: var(--color-primary);
     color: var(--color-surface);
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
 
     }
