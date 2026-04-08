@@ -64,7 +64,7 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
     } catch (error) {
         console.error("LOGIN ERROR:", error);
 
-        setErrorMessage("Something went wrong. Try again.");
+        setErrorMessage("Wrong email or password");
     } finally {
         loginBtn.disabled = false;
     }
