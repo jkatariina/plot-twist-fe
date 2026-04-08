@@ -1,19 +1,19 @@
 import { getBaseUrl } from "./api.js";
 
 export async function getPlants() {
-    const url = new URL("plants", getBaseUrl());
+    const url = new URL("products", getBaseUrl());
 
     const response = await fetch(url);
 
     if (!response.ok) {
-        throw new Error("Failed to fetch plants");
+        throw new Error("Failed to fetch products");
     }
 
     return response.json();
 }
 
 export async function createPlant(plant) {
-    const url = new URL("plants", getBaseUrl());
+    const url = new URL("products", getBaseUrl());
 
     const response = await fetch(url, {
         method: "POST",
@@ -24,7 +24,7 @@ export async function createPlant(plant) {
     });
 
     if (!response.ok) {
-        throw new Error("Failed to create plant");
+        throw new Error("Failed to create product");
     }
 
     return response.json();

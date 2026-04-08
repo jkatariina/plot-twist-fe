@@ -60,6 +60,25 @@ async function loadPlants() {
 loadPlants();
 
 
+//set timeout
+async function syncPlants() {
+    try {
+        const plants = await getPlants();
+        allPlants = plants;
+        renderPlants(plants);
+
+        filterPlantsByDistance();
+
+    } catch (err) {
+        console.error("Sync failed:", err);
+    } finally {
+        setTimeout(syncPlants, 5000);
+    }
+}
+
+// starta loopen EN gång
+syncPlants();
+
 // create plant
 map.on("click", async (e) => {
     try {
