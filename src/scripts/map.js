@@ -132,8 +132,8 @@ map.on("locationfound", (e) => {
     // user marker
     L.circleMarker(userLocation, {
         radius: 10,
-        color: "#36724c",
-        fillColor: "#36724c",
+        color: "#2c2c2c",
+        fillColor: "#4d4d4d",
         fillOpacity: 1
     })
     .addTo(map)

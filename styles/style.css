@@ -131,6 +131,7 @@ body {
 
 .nav-links a:hover {
   background: var(--color-bg-alt);
+  border-radius: 8px;
 }
 
 .nav-links a.add-plant {
