@@ -4,5 +4,5 @@ export function getBaseUrl() {
   //   return "http://localhost:3000/";
   // }
   
-  return "https://webbshop-2026-be-sigma.vercel.app/";
+  return "https://webbshop-2026-be-sigma.vercel.app";
 }

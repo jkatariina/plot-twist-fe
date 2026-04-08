@@ -59,6 +59,14 @@ h2 {
     text-decoration: underline;
 }
 
+.error-message {
+    margin-top: 0.5rem;
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+    display: none;
+}
+
 @media (min-width: 768px) {
     .auth-box {
         padding: 2rem 4rem;
