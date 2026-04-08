@@ -59,7 +59,7 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         localStorage.setItem("token", data.token);
 
         setErrorMessage("");
-        window.location.href = "/map";
+        window.location.href = "/map.html";
 
     } catch (error) {
         console.error("LOGIN ERROR:", error);
