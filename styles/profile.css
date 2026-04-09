@@ -168,4 +168,11 @@
   .add-btn {
     width: 100%;
   }
+
+}
+
+.empty-state {
+  margin-top: 1rem;
+  color: #666;
+  font-style: italic;
 }

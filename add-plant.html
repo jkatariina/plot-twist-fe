@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Plant - Plot Twist</title>
+    <link rel="stylesheet" href="/styles/style.css" />
+    <link rel="stylesheet" href="/styles/add-plant.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a href="index.html" class="logo">Plot Twist</a>
+        <input type="checkbox" id="menu-toggle" />
+        <label for="menu-toggle" class="menu-icon">
+          <i class="fa-solid fa-bars hamburger"></i>
+          <i class="fa-solid fa-xmark close"></i>
+        </label>
+        <ul class="nav-links">
+          <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
+          <li><a href="/login.html" class="auth-link" id="authLink">Log in</a></li>
+          <li><a href="/map.html">Map</a></li>
+          <li><a href="/profile.html">Profile</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="add-plant-page">
+      <section class="add-plant-header">
+        <h1>Add a plant</h1>
+        <p>Share your plant with the community and start swapping.</p>
+      </section>
+
+      <section class="add-plant-card">
+        <form class="add-plant-form">
+          <label for="plant-name">Plant name</label>
+          <input type="text" id="plant-name" name="plant-name" placeholder="Monstera Deliciosa" />
+
+          <label for="plant-location">Location</label>
+          <input type="text" id="plant-location" name="plant-location" placeholder="Stockholm" />
+
+          <label for="plant-image">Image URL</label>
+          <input type="text" id="plant-image" name="plant-image" placeholder="Paste image link here" />
+
+          <label for="plant-description">Description</label>
+          <textarea
+            id="plant-description"
+            name="plant-description"
+            rows="5"
+            placeholder="Tell others a bit about your plant..."
+          ></textarea>
+
+          <button type="submit" class="submit-btn">Add plant</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

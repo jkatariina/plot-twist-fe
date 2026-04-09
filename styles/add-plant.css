@@ -1,0 +1,90 @@
+/* ADD PLANT PAGE */
+
+.add-plant-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+/* HEADER */
+.add-plant-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.add-plant-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.add-plant-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* CARD */
+.add-plant-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* FORM */
+.add-plant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* LABELS */
+.add-plant-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* INPUTS */
+.add-plant-form input,
+.add-plant-form textarea {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  transition: 0.2s ease;
+}
+
+/* FOCUS EFFECT */
+.add-plant-form input:focus,
+.add-plant-form textarea:focus {
+  outline: none;
+  border-color: #1e3d2f;
+}
+
+/* BUTTON */
+.submit-btn {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  background: #1e3d2f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.submit-btn:hover {
+  background: #2c5a45;
+  transform: translateY(-2px);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .add-plant-page {
+    padding: 3rem 1.5rem;
+  }
+
+  .add-plant-card {
+    padding: 1.5rem;
+  }
+}
