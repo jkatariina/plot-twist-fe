@@ -1,4 +1,4 @@
-import { getBaseUrl } from "./api.js";
+import { getBaseUrl } from "../utils/api.js";
 
 export async function getPlants() {
     const url = new URL("products", getBaseUrl());

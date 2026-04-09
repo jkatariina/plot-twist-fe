@@ -69,3 +69,10 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         loginBtn.disabled = false;
     }
 });
+
+
+const registerFullnameInput = document.getElementById("#registerFullnameInput");
+const registerUsernameInput = document.getElementById("#registerUsernameInput");
+const registerEmailInput = document.getElementById("#registerEmailInput");
+const registerPasswordInput = document.getElementById("#registerPasswordInput");
+
