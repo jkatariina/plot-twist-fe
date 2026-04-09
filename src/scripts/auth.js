@@ -1,4 +1,4 @@
-import { login } from "../utils/authApi.js";
+import { login, register } from "../utils/authApi.js";
 
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
@@ -12,7 +12,7 @@ if (!errorMessage) {
     errorMessage.classList.add("error-message");
     errorMessage.style.display = "none";
 
-    loginBtn && loginBtn.insertAdjacentElement("afterend", errorMessage);
+    passwordInput && passwordInput.insertAdjacentElement("afterend", errorMessage);
 }
 
 function setErrorMessage(message) {
@@ -44,8 +44,6 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
     try {
         const data = await login(email, password);
 
-        console.log("LOGIN RESPONSE:", data);
-
         if (data?.error || data?.message) {
             setErrorMessage("Wrong email or password");
             return;
@@ -70,9 +68,87 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
     }
 });
 
+//register
 
-const registerFullnameInput = document.getElementById("#registerFullnameInput");
-const registerUsernameInput = document.getElementById("#registerUsernameInput");
-const registerEmailInput = document.getElementById("#registerEmailInput");
-const registerPasswordInput = document.getElementById("#registerPasswordInput");
+const registerFullnameInput = document.getElementById("registerFullnameInput");
+const registerEmailInput = document.getElementById("registerEmailInput");
+const registerPasswordInput = document.getElementById("registerPasswordInput");
+const termsCheckbox = document.getElementById("registerTerms");
+const submitBtn = document.getElementById("submitBtn");
 
+let errorMessageRegister = document.getElementById("rrorMessageRegister");
+
+if (!errorMessageRegister) {
+    errorMessageRegister = document.createElement("p");
+    errorMessageRegister.id = "errorMessageRegister";
+    errorMessageRegister.classList.add("errorMessageRegister");
+    errorMessageRegister.style.display = "none";
+    submitBtn?.insertAdjacentElement("beforebegin", errorMessageRegister);
+}
+
+function showError(element, message) {
+    if (!element) return;
+
+    if (!message) {
+        element.textContent = "";
+        element.style.display = "none";
+        return;
+    }
+
+    element.textContent = message;
+    element.style.display = "block";
+}
+
+submitBtn?.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    showError(errorMessageRegister, "");
+
+    const name = registerFullnameInput?.value.trim();
+    const email = registerEmailInput?.value.trim();
+    const password = registerPasswordInput?.value.trim();
+    const termsAccepted = termsCheckbox?.checked;
+
+    console.log({ name, email, password, termsAccepted });
+
+    if (!name || !email || !password) {
+        showError(errorMessageRegister, "Please fill in all fields");
+        return;
+    }
+
+    if (!termsAccepted) {
+        showError(errorMessageRegister, "You must accept the terms");
+        return;
+    }
+
+    submitBtn.disabled = true;
+
+    try {
+        const data = await register(name, email, password);
+
+        if (data?.errors) {
+            const msg = data.errors.map(e => e.msg).join(", ");
+            showError(errorMessageRegister, msg);
+            return;
+        }
+
+        if (data?.error || !data) {
+            showError(errorMessageRegister, data?.message || "Email already exist");
+            return;
+        }
+
+        if (data?.token) {
+            localStorage.setItem("token", data.token);
+            window.location.href = "/map.html";
+            return;
+        }
+
+        window.location.href = "/login.html";
+
+    } catch (error) {
+        console.error("REGISTER ERROR:", error);
+        showError(errorMessageRegister, error.message || "Something went wrong");
+    } finally {
+        submitBtn.disabled = false;
+    }
+});

@@ -58,11 +58,10 @@ h2 {
     text-decoration: underline;
 }
 
-.error-message {
+.error-message, .errorMessageRegister {
     margin-top: 0.5rem;
     color: red;
     font-size: 0.9rem;
-    text-align: center;
     display: none;
 }
 

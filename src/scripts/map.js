@@ -38,7 +38,7 @@ function renderPlants(plants) {
             .addTo(map)
             .bindPopup(`
             <div class="popup-content">
-                <img src="${plant.image}" alt="${plant.name}" style="width:150px; height:auto;" /><br/>
+                <img src="${plant.image}style="width:150px; height:auto;"/> <b>${plant.name}</b>
                 ${plant.description || ""}
                 <button onclick="sendSwapRequest('${plant._id}')" class="swap-button">Send swap request</button>
             </div>
