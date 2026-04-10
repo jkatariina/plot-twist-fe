@@ -1,95 +1,142 @@
-import { getBaseUrl } from "../utils/api.js";
-
-const token = localStorage.getItem("token");
-
-function parseJwt(token) {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch (error) {
-    return null;
-  }
-}
-
-const decoded = token ? parseJwt(token) : null;
+import { getProfile } from "../utils/profileApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
-const plantsContainer = document.querySelector(".profile-plants");
+const imageEl = document.getElementById("userImage");
+const aboutEl = document.getElementById("profileAbout");
+const plantCountBadge = document.getElementById("plantCountBadge");
+const userStatusBadge = document.getElementById("userStatusBadge");
+const plantsContainer = document.getElementById("plantsContainer");
+const tradesContainer = document.getElementById("tradesContainer");
 
-if (decoded) {
-  if (nameEl) {
-    nameEl.textContent = decoded.email.split("@")[0];
-  }
+const token = localStorage.getItem("token");
 
-  if (emailEl) {
-    emailEl.textContent = decoded.email;
-  }
+if (!token) {
+  window.location.href = "/login.html";
 }
 
-function insertBeforeAbout(element) {
-  const aboutBox = plantsContainer.querySelector(".about-box");
+initProfile();
 
-  if (aboutBox) {
-    plantsContainer.insertBefore(element, aboutBox);
-  } else {
-    plantsContainer.appendChild(element);
-  }
-}
-
-async function loadUserPlants() {
-  if (!decoded || !token || !plantsContainer) return;
-
+async function initProfile() {
   try {
-    const baseUrl = getBaseUrl();
-    const userId = decoded.id;
-
-    const response = await fetch(`${baseUrl}/auth/${userId}/plants`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to fetch plants");
-    }
-
-    const oldCards = plantsContainer.querySelectorAll(".plant-card, .empty-state");
-    oldCards.forEach((el) => el.remove());
-
-    if (!Array.isArray(data) || data.length === 0) {
-      const empty = document.createElement("p");
-      empty.classList.add("empty-state");
-      empty.textContent = "You have no plants yet.";
-      insertBeforeAbout(empty);
-      return;
-    }
-
-    data.forEach((plant) => {
-      const card = document.createElement("div");
-      card.classList.add("plant-card");
-
-      card.innerHTML = `
-        <div>
-          <strong>${plant.name ?? "Unnamed plant"}</strong>
-          <p>${plant.location ?? "No location"}</p>
-        </div>
-      `;
-
-      insertBeforeAbout(card);
-    });
-  } catch (error) {
-    console.error("Plants could not be loaded:", error);
-
-    const oldCards = plantsContainer.querySelectorAll(".plant-card, .empty-state");
-    oldCards.forEach((el) => el.remove());
-
-    const empty = document.createElement("p");
-    empty.classList.add("empty-state");
-    empty.textContent = "No plants to show yet.";
-    insertBeforeAbout(empty);
+    const user = await getProfile(token);
+    renderProfile(user);
+  } catch (err) {
+    console.error("Failed to load profile:", err);
   }
 }
 
-loadUserPlants();
+// profile
+function renderProfile(user) {
+
+  nameEl.textContent = user.name || "Unknown";
+  emailEl.textContent = user.email;
+
+  const fallbackImage = "public/blank-profile-picture.svg";
+  imageEl.src = user.image || fallbackImage;
+
+  imageEl.onerror = () => {
+    imageEl.src = fallbackImage;
+  };
+
+  if (!user.about) {
+    aboutEl.textContent = "No bio yet";
+    aboutEl.classList.add("empty-state");
+  } else {
+    aboutEl.textContent = user.about;
+    aboutEl.classList.remove("empty-state");
+  }
+
+  plantCountBadge.textContent = `${user.plants?.length || 0} plants`;
+
+  userStatusBadge.textContent = user.verified
+    ? "Verified swapper"
+    : "Unverified";
+
+  renderPlants(user.plants || []);
+  renderActiveTrades(user.trades || []);
+  renderCompletedTrades(user.trades || []);
+}
+
+function renderPlants(plants) {
+  plantsContainer.innerHTML = "";
+
+  if (!plants.length) {
+    plantsContainer.innerHTML =
+      `<p class="empty-state">No plants yet</p>`;
+    return;
+  }
+
+  plants.forEach((plant) => {
+    const card = document.createElement("div");
+    card.classList.add("plant-card");
+
+    card.innerHTML = `
+      <img src="${plant.image || "/images/plant-placeholder.png"}" />
+      <div>
+        <strong>${plant.name}</strong>
+        <p>${plant.location || ""}</p>
+      </div>
+    `;
+
+    plantsContainer.appendChild(card);
+  });
+}
+
+// active trades
+function renderActiveTrades(trades) {
+  const active = trades.filter(
+    (t) => t.status === "active" || t.status === "pending"
+  );
+
+  activeTradesContainer.innerHTML = "";
+
+  if (!active.length) {
+    activeTradesContainer.innerHTML =
+      `<p class="empty-state">No active swaps</p>`;
+    return;
+  }
+
+  active.forEach((trade) => {
+    const card = document.createElement("div");
+    card.classList.add("activity-card");
+
+    card.innerHTML = `
+      <div>
+        <strong>${trade.plantName}</strong>
+        <p>With ${trade.withUser || "Unknown user"}</p>
+      </div>
+      <span class="badge">Pending</span>
+    `;
+
+    activeTradesContainer.appendChild(card);
+  });
+}
+
+// completed trades
+function renderCompletedTrades(trades) {
+  const completed = trades.filter((t) => t.status === "completed");
+
+  tradesContainer.innerHTML = "";
+
+  if (!completed.length) {
+    tradesContainer.innerHTML =
+      `<p class="empty-state">No completed swaps</p>`;
+    return;
+  }
+
+  completed.forEach((trade) => {
+    const card = document.createElement("div");
+    card.classList.add("activity-card");
+
+    card.innerHTML = `
+      <div>
+        <strong>${trade.plantName}</strong>
+        <p>With ${trade.withUser}</p>
+      </div>
+      <span class="badge">Completed</span>
+    `;
+
+    tradesContainer.appendChild(card);
+  });
+}
