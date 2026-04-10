@@ -145,6 +145,10 @@ body {
   background: var(--color-primary-hover);
 }
 
+.logout-item {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .menu-icon {
     display: none;

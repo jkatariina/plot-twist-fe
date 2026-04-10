@@ -76,7 +76,7 @@ const registerPasswordInput = document.getElementById("registerPasswordInput");
 const termsCheckbox = document.getElementById("registerTerms");
 const submitBtn = document.getElementById("submitBtn");
 
-let errorMessageRegister = document.getElementById("rrorMessageRegister");
+let errorMessageRegister = document.getElementById("errorMessageRegister");
 
 if (!errorMessageRegister) {
     errorMessageRegister = document.createElement("p");
