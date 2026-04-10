@@ -5,7 +5,7 @@ export async function getProfile(token) {
         throw new Error("No token provided");
     }
 
-    const res = await fetch(`${getBaseUrl()}/profile`, {
+    const res = await fetch(`${getBaseUrl()}/me`, {
         headers: {
         Authorization: `Bearer ${token}`,
         },
