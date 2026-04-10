@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <title>Plot Twist</title>
+        <link rel="stylesheet" href="/styles/style.css"/>
+        <link rel="stylesheet" href="/styles/trades.css"/>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    </head>
+    <body>
+    <!-- HEADER -->
+        <header class="site-header">
+            <nav class="nav">
+                <a href="index.html" class="logo">Plot Twist</a>
+                <input type="checkbox" id="menu-toggle"/>
+                <label for="menu-toggle" class="menu-icon">
+                <i class="fa-solid fa-bars hamburger"></i>
+                <i class="fa-solid fa-xmark close"></i>
+                </label>
+                <ul class="nav-links">
+                    <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
+                    <li id="loginItem"><a href="/login.html">Log in</a></li>
+                    <li><a href="/map.html">Map</a></li>
+                    <li><a href="/profile.html">Profile</a></li>
+                    <li class="logout-item" id="logoutItem"><a href="/index.html" id="logoutBtn">Log out</a></li>
+                </ul>
+            </nav>
+        </header>
+        <!-- MAIN CONTENT -->
+        <main class="trades-content">
+            <section class="trades-section">
+                <div class="trades-container" id="trades-container"></div>
+            </section>
+        </main>
+        <!-- FOOTER -->
+        <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+            <div class="footer-links">
+            </div>
+        </div>
+        </footer>
+        <!-- PAGE-SPECIFIC JAVASCRIPT -->
+        <script type="module" src="./src/scripts/trades.js"></script>
+        <script type="module" src="./src/scripts/navbar.js"></script>
+    </body>
+</html>
