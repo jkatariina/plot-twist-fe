@@ -1,4 +1,5 @@
 import { getProfile, getPlants } from "../utils/profileApi.js";
+import { getTrades } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -18,24 +19,24 @@ if (!token) {
   window.location.href = "/login.html";
 }
 
-// init
+// init profile
 initProfile();
 
 async function initProfile() {
   try {
     const user = await getProfile(token);
     const plants = await getPlants(token);
-
-    console.log("USER:", user);
-    console.log("PLANTS:", plants);
+    const trades = await getTrades(token);
 
     renderProfile(user, plants);
+    renderTrades(trades);
   } catch (err) {
     console.error("Failed to load profile:", err);
   }
 }
 
-// profile 
+
+// render profile 
 function renderProfile(user, plants = []) {
   nameEl.textContent = user.name || "Unknown";
   emailEl.textContent = user.email || "";
@@ -51,8 +52,6 @@ function renderProfile(user, plants = []) {
   aboutEl.textContent = user.about || "No bio yet";
   aboutEl.classList.toggle("empty-state", !user.about);
 
-  const trades = user.trades || [];
-
   plantCountBadge.textContent = `${plants.length} plants`;
 
   userStatusBadge.textContent = user.verified
@@ -60,13 +59,11 @@ function renderProfile(user, plants = []) {
     : "Unverified";
 
   renderPlants(plants);
-  renderActiveTrades(trades);
-  renderCompletedTrades(trades);
 }
+
 
 function cleanImage(url) {
   if (!url) return null;
-
 
   if (url.includes("imgurl=")) {
     try {
@@ -85,6 +82,16 @@ function cleanImage(url) {
 }
 
 // plants
+function getPlantName(productId, plants) {
+  const plant = plants.find(p => p._id === productId);
+  return plant ? plant.name : "Unknown plant";
+}
+
+function getUserName(userId, users) {
+  const user = users.find(u => u._id === userId);
+  return user ? user.name : "Unknown user";
+}
+
   function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
@@ -123,60 +130,82 @@ function cleanImage(url) {
   
 }
 
-//active trades
-function renderActiveTrades(trades) {
-  const active = trades.filter(
-    (t) => t.status === "active" || t.status === "pending"
-  );
-
-  activeTradesContainer.innerHTML = "";
-
-  if (!active.length) {
-    activeTradesContainer.innerHTML =
-      `<p class="empty-state">No active swaps</p>`;
-    return;
-  }
-
-  active.forEach((trade) => {
-    const card = document.createElement("div");
-    card.classList.add("activity-card");
-
-    card.innerHTML = `
-      <div>
-        <strong>${trade.plantName || "Unknown plant"}</strong>
-        <p>With ${trade.withUser || "Unknown user"}</p>
-      </div>
-      <span class="badge">Pending</span>
-    `;
-
-    activeTradesContainer.appendChild(card);
-  });
+// helpers
+function formatStatus(status) {
+  if (status === "pending") return "Pending";
+  if (status === "accepted") return "Accepted";
+  if (status === "rejected") return "Rejected";
+  return status;
 }
 
-// completed trades
-function renderCompletedTrades(trades) {
-  const completed = trades.filter((t) => t.status === "completed");
+function getStatusClass(status) {
+  if (status === "pending") return "badge-pending";
+  if (status === "accepted") return "badge-accepted";
+  if (status === "rejected") return "badge-rejected";
+  return "";
+}
 
+
+//active & completed trades 
+function renderTrades(trades) {
+
+  console.log("TRADES:", trades);
+
+
+  activeTradesContainer.innerHTML = "";
   completedTradesContainer.innerHTML = "";
 
-  if (!completed.length) {
-    completedTradesContainer.innerHTML =
-      `<p class="empty-state">No completed swaps</p>`;
+  if (!trades || trades.length === 0) {
+    activeTradesContainer.innerHTML = `<p class="empty-state">No active trades</p>`;
+    completedTradesContainer.innerHTML = `<p class="empty-state">No completed trades</p>`;
     return;
   }
 
-  completed.forEach((trade) => {
+  const activeTrades = trades.filter(t => t.status === "pending");
+
+  const completedTrades = trades.filter(
+    t => t.status === "accepted" || t.status === "rejected"
+  );
+
+  renderTradeList(activeTrades, activeTradesContainer, "No active trades");
+  renderTradeList(completedTrades, completedTradesContainer, "No completed trades");
+}
+
+
+function renderTradeList(trades, container, emptyText) {
+  container.innerHTML = "";
+
+  if (!trades.length) {
+    container.innerHTML = `<p class="empty-state">${emptyText}</p>`;
+    return;
+  }
+
+  trades.forEach(trade => {
     const card = document.createElement("div");
-    card.classList.add("activity-card");
+    card.classList.add("trade-card");
 
     card.innerHTML = `
       <div>
-        <strong>${trade.plantName || "Unknown plant"}</strong>
-        <p>With ${trade.withUser || "Unknown user"}</p>
+
+        <small>
+          ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
+        </small>
+
+        <span class="badge ${getStatusClass(trade.status)}">
+          ${formatStatus(trade.status)}
+        </span>
+
+        <p>
+          <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
+          <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
+        </p>
+
+        <p>
+          <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
+        </p>
       </div>
-      <span class="badge">Completed</span>
     `;
 
-    completedTradesContainer.appendChild(card);
+    container.appendChild(card);
   });
 }

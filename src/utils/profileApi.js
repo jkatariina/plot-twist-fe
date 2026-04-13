@@ -1,5 +1,6 @@
 import { getBaseUrl } from "../utils/api.js";
 
+//profile
 export async function getProfile(token) {
     if (!token) {
         throw new Error("No token provided");
@@ -18,8 +19,7 @@ export async function getProfile(token) {
     return res.json();
 }
 
-/* ---------------- PLANTS ---------------- */
-
+//plants
 export async function getPlants(token) {
     if (!token) {
         throw new Error("No token provided");
