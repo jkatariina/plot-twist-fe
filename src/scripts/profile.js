@@ -19,25 +19,25 @@ if (!token) {
   window.location.href = "/login.html";
 }
 
-// init
+// init profile
 initProfile();
 
 async function initProfile() {
   try {
     const user = await getProfile(token);
     const plants = await getPlants(token);
-    const allTrades = await getTrades(token);
-    const userId = JSON.parse(atob(token.split(".")[1])).id;
+    const trades = await getTrades(token);
 
-    renderProfile(user, plants, allTrades, userId);
+    renderProfile(user, plants);
+    renderTrades(trades);
   } catch (err) {
     console.error("Failed to load profile:", err);
   }
 }
 
 
-// profile 
-function renderProfile(user, plants = [], trades = [], userId) {
+// render profile 
+function renderProfile(user, plants = []) {
   nameEl.textContent = user.name || "Unknown";
   emailEl.textContent = user.email || "";
 
@@ -59,8 +59,6 @@ function renderProfile(user, plants = [], trades = [], userId) {
     : "Unverified";
 
   renderPlants(plants);
-  renderActiveTrades(trades, userId, plants);
-  renderCompletedTrades(trades, userId, plants);
 }
 
 
@@ -132,71 +130,82 @@ function getUserName(userId, users) {
   
 }
 
-//active trades 
-function renderActiveTrades(trades, userId, plants) {
-  const active = trades.filter((t) => t.status === "pending");
+// helpers
+function formatStatus(status) {
+  if (status === "pending") return "Pending";
+  if (status === "accepted") return "Accepted";
+  if (status === "rejected") return "Rejected";
+  return status;
+}
 
-  activeTradesContainer.innerHTML = "";
-
-  if (!active.length) {
-    activeTradesContainer.innerHTML =
-      `<p class="empty-state">No active swaps</p>`;
-    return;
-  }
-
-  active.forEach((trade) => {
-    const isOutgoing = trade.requester === userId;
-    const otherUser = isOutgoing ? trade.receiver : trade.requester;
-
-console.log("trade:", trade);
-console.log("productName:", trade.product);
-
-    const card = document.createElement("div");
-    card.classList.add("activity-card");
-
-    card.innerHTML = `
-      <div>
-        <strong>Product: ${getPlantName(trade.product, plants)}</strong>
-      <p>${isOutgoing ? "" : ""}</p>
-      </div>
-      <span class="badge">Pending</span>
-    `;
-
-    activeTradesContainer.appendChild(card);
-  });
+function getStatusClass(status) {
+  if (status === "pending") return "badge-pending";
+  if (status === "accepted") return "badge-accepted";
+  if (status === "rejected") return "badge-rejected";
+  return "";
 }
 
 
-// completed trades
+//active & completed trades 
+function renderTrades(trades) {
 
-function renderCompletedTrades(trades, userId, plants) {
-  const completed = trades.filter(
-    (t) => t.status === "accepted" || t.status === "rejected"
-  );
+  console.log("TRADES:", trades);
 
+
+  activeTradesContainer.innerHTML = "";
   completedTradesContainer.innerHTML = "";
 
-  if (!completed.length) {
-    completedTradesContainer.innerHTML =
-      `<p class="empty-state">No completed swaps</p>`;
+  if (!trades || trades.length === 0) {
+    activeTradesContainer.innerHTML = `<p class="empty-state">No active trades</p>`;
+    completedTradesContainer.innerHTML = `<p class="empty-state">No completed trades</p>`;
     return;
   }
 
-  completed.forEach((trade) => {
-    const isOutgoing = trade.requester === userId;
-    const otherUser = isOutgoing ? trade.receiver : trade.requester;
+  const activeTrades = trades.filter(t => t.status === "pending");
 
+  const completedTrades = trades.filter(
+    t => t.status === "accepted" || t.status === "rejected"
+  );
+
+  renderTradeList(activeTrades, activeTradesContainer, "No active trades");
+  renderTradeList(completedTrades, completedTradesContainer, "No completed trades");
+}
+
+
+function renderTradeList(trades, container, emptyText) {
+  container.innerHTML = "";
+
+  if (!trades.length) {
+    container.innerHTML = `<p class="empty-state">${emptyText}</p>`;
+    return;
+  }
+
+  trades.forEach(trade => {
     const card = document.createElement("div");
-    card.classList.add("activity-card");
+    card.classList.add("trade-card");
 
     card.innerHTML = `
       <div>
-        <strong>Product: ${getPlantName(trade.product, plants)}</strong>
-        <p>${isOutgoing ? "To" : "From"} user: ${otherUser}</p>
+
+        <small>
+          ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
+        </small>
+
+        <span class="badge ${getStatusClass(trade.status)}">
+          ${formatStatus(trade.status)}
+        </span>
+
+        <p>
+          <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
+          <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
+        </p>
+
+        <p>
+          <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
+        </p>
       </div>
-      <span class="badge">${trade.status}</span>
     `;
 
-    completedTradesContainer.appendChild(card);
+    container.appendChild(card);
   });
 }

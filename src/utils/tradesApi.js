@@ -15,5 +15,17 @@ export async function getTrades(token) {
         throw new Error(`Failed to fetch trades: ${res.status}`);
     }
 
-    return res.json();
+    const content = await res.json();
+
+    const result = content.map(async (item) => {
+        const trade = await fetch(`${getBaseUrl()}/trades/${item._id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return trade.json();
+    });
+
+    return await Promise.all(result);
 }

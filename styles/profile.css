@@ -119,7 +119,8 @@
 
 
 .plant-card,
-.activity-card {
+.activity-card,
+.trade-card {
   background: #f7f7f7;
   padding: 1rem;
   border-radius: 10px;
@@ -129,12 +130,14 @@
 
 
 .plant-card:hover,
-.activity-card:hover {
+.activity-card:hover,
+.trade-card:hover {
   transform: translateY(-3px);
 }
 
 .plant-card p,
-.activity-card p {
+.activity-card p,
+.trade-card p {
   margin: 0.2rem 0 0 0;
   font-size: 0.85rem;
   color: #666;
