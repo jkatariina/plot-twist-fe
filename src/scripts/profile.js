@@ -1,4 +1,4 @@
-import { getProfile } from "../utils/profileApi.js";
+import { getProfile, getPlants } from "../utils/profileApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -6,64 +6,90 @@ const imageEl = document.getElementById("userImage");
 const aboutEl = document.getElementById("profileAbout");
 const plantCountBadge = document.getElementById("plantCountBadge");
 const userStatusBadge = document.getElementById("userStatusBadge");
+
 const plantsContainer = document.getElementById("plantsContainer");
-const tradesContainer = document.getElementById("tradesContainer");
+const activeTradesContainer = document.getElementById("activeTradesContainer");
+const completedTradesContainer = document.getElementById("completedTradesContainer");
 
 const token = localStorage.getItem("token");
+
 
 if (!token) {
   window.location.href = "/login.html";
 }
 
+// init
 initProfile();
 
 async function initProfile() {
   try {
     const user = await getProfile(token);
-    renderProfile(user);
+    const plants = await getPlants(token);
+
+    console.log("USER:", user);
+    console.log("PLANTS:", plants);
+
+    renderProfile(user, plants);
   } catch (err) {
     console.error("Failed to load profile:", err);
   }
 }
 
-// profile
-function renderProfile(user) {
-
+// profile 
+function renderProfile(user, plants = []) {
   nameEl.textContent = user.name || "Unknown";
-  emailEl.textContent = user.email;
+  emailEl.textContent = user.email || "";
 
   const fallbackImage = "public/blank-profile-picture.svg";
-  imageEl.src = user.image || fallbackImage;
+
+  imageEl.src = user.profileImage || fallbackImage;
 
   imageEl.onerror = () => {
     imageEl.src = fallbackImage;
   };
 
-  if (!user.about) {
-    aboutEl.textContent = "No bio yet";
-    aboutEl.classList.add("empty-state");
-  } else {
-    aboutEl.textContent = user.about;
-    aboutEl.classList.remove("empty-state");
-  }
+  aboutEl.textContent = user.about || "No bio yet";
+  aboutEl.classList.toggle("empty-state", !user.about);
 
-  plantCountBadge.textContent = `${user.plants?.length || 0} plants`;
+  const trades = user.trades || [];
+
+  plantCountBadge.textContent = `${plants.length} plants`;
 
   userStatusBadge.textContent = user.verified
     ? "Verified swapper"
     : "Unverified";
 
-  renderPlants(user.plants || []);
-  renderActiveTrades(user.trades || []);
-  renderCompletedTrades(user.trades || []);
+  renderPlants(plants);
+  renderActiveTrades(trades);
+  renderCompletedTrades(trades);
 }
 
-function renderPlants(plants) {
+function cleanImage(url) {
+  if (!url) return null;
+
+
+  if (url.includes("imgurl=")) {
+    try {
+      const match = url.match(/imgurl=([^&]+)/);
+      if (match?.[1]) {
+        return decodeURIComponent(match[1]);
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  if (url.includes("imgres")) return null;
+
+  return url;
+}
+
+// plants
+  function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
   if (!plants.length) {
-    plantsContainer.innerHTML =
-      `<p class="empty-state">No plants yet</p>`;
+    plantsContainer.innerHTML = `<p class="empty-state">No plants yet</p>`;
     return;
   }
 
@@ -72,10 +98,23 @@ function renderPlants(plants) {
     card.classList.add("plant-card");
 
     card.innerHTML = `
-      <img src="${plant.image || "/images/plant-placeholder.png"}" />
+        ${cleanImage(plant.image)
+          ? `<img src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+          : ""
+        }
+
       <div>
-        <strong>${plant.name}</strong>
-        <p>${plant.location || ""}</p>
+        <strong>${plant.name || "Unnamed plant"}</strong>
+
+        <p>${plant.description || "No description"}</p>
+
+        <p>
+          lightRequirements: ${plant.lightRequirements ?? "N/A"}
+        </p>
+
+        <small>
+          ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
+        </small>
       </div>
     `;
 
@@ -83,7 +122,7 @@ function renderPlants(plants) {
   });
 }
 
-// active trades
+//active trades
 function renderActiveTrades(trades) {
   const active = trades.filter(
     (t) => t.status === "active" || t.status === "pending"
@@ -103,7 +142,7 @@ function renderActiveTrades(trades) {
 
     card.innerHTML = `
       <div>
-        <strong>${trade.plantName}</strong>
+        <strong>${trade.plantName || "Unknown plant"}</strong>
         <p>With ${trade.withUser || "Unknown user"}</p>
       </div>
       <span class="badge">Pending</span>
@@ -117,10 +156,10 @@ function renderActiveTrades(trades) {
 function renderCompletedTrades(trades) {
   const completed = trades.filter((t) => t.status === "completed");
 
-  tradesContainer.innerHTML = "";
+  completedTradesContainer.innerHTML = "";
 
   if (!completed.length) {
-    tradesContainer.innerHTML =
+    completedTradesContainer.innerHTML =
       `<p class="empty-state">No completed swaps</p>`;
     return;
   }
@@ -131,12 +170,12 @@ function renderCompletedTrades(trades) {
 
     card.innerHTML = `
       <div>
-        <strong>${trade.plantName}</strong>
-        <p>With ${trade.withUser}</p>
+        <strong>${trade.plantName || "Unknown plant"}</strong>
+        <p>With ${trade.withUser || "Unknown user"}</p>
       </div>
       <span class="badge">Completed</span>
     `;
 
-    tradesContainer.appendChild(card);
+    completedTradesContainer.appendChild(card);
   });
 }
