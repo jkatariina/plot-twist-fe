@@ -109,7 +109,7 @@ function cleanImage(url) {
         <p>${plant.description || "No description"}</p>
 
         <p>
-          lightRequirements: ${plant.lightRequirements ?? "N/A"}
+          Light requirements: ${plant.lightRequirements ?? "N/A"}
         </p>
 
         <small>
@@ -117,9 +117,10 @@ function cleanImage(url) {
         </small>
       </div>
     `;
-
+    
     plantsContainer.appendChild(card);
   });
+  
 }
 
 //active trades
