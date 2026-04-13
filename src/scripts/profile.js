@@ -1,4 +1,5 @@
 import { getProfile, getPlants } from "../utils/profileApi.js";
+import { getTrades } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -25,18 +26,18 @@ async function initProfile() {
   try {
     const user = await getProfile(token);
     const plants = await getPlants(token);
+    const allTrades = await getTrades(token);
+    const userId = JSON.parse(atob(token.split(".")[1])).id;
 
-    console.log("USER:", user);
-    console.log("PLANTS:", plants);
-
-    renderProfile(user, plants);
+    renderProfile(user, plants, allTrades, userId);
   } catch (err) {
     console.error("Failed to load profile:", err);
   }
 }
 
+
 // profile 
-function renderProfile(user, plants = []) {
+function renderProfile(user, plants = [], trades = [], userId) {
   nameEl.textContent = user.name || "Unknown";
   emailEl.textContent = user.email || "";
 
@@ -51,8 +52,6 @@ function renderProfile(user, plants = []) {
   aboutEl.textContent = user.about || "No bio yet";
   aboutEl.classList.toggle("empty-state", !user.about);
 
-  const trades = user.trades || [];
-
   plantCountBadge.textContent = `${plants.length} plants`;
 
   userStatusBadge.textContent = user.verified
@@ -60,13 +59,13 @@ function renderProfile(user, plants = []) {
     : "Unverified";
 
   renderPlants(plants);
-  renderActiveTrades(trades);
-  renderCompletedTrades(trades);
+  renderActiveTrades(trades, userId, plants);
+  renderCompletedTrades(trades, userId, plants);
 }
+
 
 function cleanImage(url) {
   if (!url) return null;
-
 
   if (url.includes("imgurl=")) {
     try {
@@ -85,6 +84,16 @@ function cleanImage(url) {
 }
 
 // plants
+function getPlantName(productId, plants) {
+  const plant = plants.find(p => p._id === productId);
+  return plant ? plant.name : "Unknown plant";
+}
+
+function getUserName(userId, users) {
+  const user = users.find(u => u._id === userId);
+  return user ? user.name : "Unknown user";
+}
+
   function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
@@ -123,11 +132,9 @@ function cleanImage(url) {
   
 }
 
-//active trades
-function renderActiveTrades(trades) {
-  const active = trades.filter(
-    (t) => t.status === "active" || t.status === "pending"
-  );
+//active trades 
+function renderActiveTrades(trades, userId, plants) {
+  const active = trades.filter((t) => t.status === "pending");
 
   activeTradesContainer.innerHTML = "";
 
@@ -138,13 +145,19 @@ function renderActiveTrades(trades) {
   }
 
   active.forEach((trade) => {
+    const isOutgoing = trade.requester === userId;
+    const otherUser = isOutgoing ? trade.receiver : trade.requester;
+
+console.log("trade:", trade);
+console.log("productName:", trade.product);
+
     const card = document.createElement("div");
     card.classList.add("activity-card");
 
     card.innerHTML = `
       <div>
-        <strong>${trade.plantName || "Unknown plant"}</strong>
-        <p>With ${trade.withUser || "Unknown user"}</p>
+        <strong>Product: ${getPlantName(trade.product, plants)}</strong>
+      <p>${isOutgoing ? "" : ""}</p>
       </div>
       <span class="badge">Pending</span>
     `;
@@ -153,9 +166,13 @@ function renderActiveTrades(trades) {
   });
 }
 
+
 // completed trades
-function renderCompletedTrades(trades) {
-  const completed = trades.filter((t) => t.status === "completed");
+
+function renderCompletedTrades(trades, userId, plants) {
+  const completed = trades.filter(
+    (t) => t.status === "accepted" || t.status === "rejected"
+  );
 
   completedTradesContainer.innerHTML = "";
 
@@ -166,15 +183,18 @@ function renderCompletedTrades(trades) {
   }
 
   completed.forEach((trade) => {
+    const isOutgoing = trade.requester === userId;
+    const otherUser = isOutgoing ? trade.receiver : trade.requester;
+
     const card = document.createElement("div");
     card.classList.add("activity-card");
 
     card.innerHTML = `
       <div>
-        <strong>${trade.plantName || "Unknown plant"}</strong>
-        <p>With ${trade.withUser || "Unknown user"}</p>
+        <strong>Product: ${getPlantName(trade.product, plants)}</strong>
+        <p>${isOutgoing ? "To" : "From"} user: ${otherUser}</p>
       </div>
-      <span class="badge">Completed</span>
+      <span class="badge">${trade.status}</span>
     `;
 
     completedTradesContainer.appendChild(card);
