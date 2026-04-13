@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile - Plot Twist</title>
+
     <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="/styles/index.css" />
     <link rel="stylesheet" href="/styles/profile.css" />
   </head>
   <body>
-
     <!-- HEADER -->
-     <header class="site-header">
+    <header class="site-header">
       <nav class="nav">
         <a href="index.html" class="logo">Plot Twist</a>
         <input type="checkbox" id="menu-toggle"/>
@@ -20,94 +20,51 @@
           <i class="fa-solid fa-xmark close"></i>
         </label>
         <ul class="nav-links">
-          <li><a href="/add-plant" class="add-plant">Add plant</a></li>
-          <li><a href="/login.html">Log in</a></li>
+          <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
+          <li id="loginItem"><a href="/login.html">Log in</a></li>
           <li><a href="/map.html">Map</a></li>
-          <li><a href="/profile.html">Profile</a></li>
+          <!-- <li class="account-item" id="accountItem"><a href="/register.html">Create new acount</a></li> -->
+          <li class="profile-item" id="profileItem"><a href="/profile.html">Profile</a></li>
+          <li class="logout-item" id="logoutItem"><a href="/index.html" id="logoutBtn">Log out</a>
+          </li>
         </ul>
       </nav>
     </header>
 
-   <main class="profile">
+    <main class="profile">
+      <!-- PROFILE -->
+      <div class="profile-left">
+        <img id="userImage" class="avatar" alt="Profile picture" />
+        <div class="profile-meta">
+          <h1 id="profileName"></h1>
+          <p id="profileEmail"></p>
+          <div class="profile-badges">
+            <span class="badge" id="plantCountBadge"></span>
+            <span class="badge" id="userStatusBadge"></span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-grid">
+        <!-- LEFT -->
+        <section class="profile-plants">
+          <h2>Active plant listings</h2>
+            <div id="plantsContainer"></div>
 
-  <!-- USER HEADER -->
-  <div class="profile-left">
-  <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%2Fid%2FOIP.5Tg7Bb6QWagzEMUVYv5VbwHaHa%3Fpid%3DApi&f=1&ipt=6771d0b651b00884b1589143caf032fbe05b6c5cb660ad408f3fcad31eb66ded&ipo=images" alt="Profile picture" class="avatar" />
-
-  <div class="profile-meta">
-    <h1 id="profileName">Test User</h1>
-
-    <div class="profile-badges">
-      <span class="badge">12 plants on map</span>
-      <span class="badge">Verified swapper</span>
-    </div>
-  </div>
-</div>
-
-  <!-- GRID -->
-  <div class="profile-grid">
-
-    <!-- LEFT -->
-    <section class="profile-plants">
-  <h2>Active plant listings</h2>
-
-  <div class="plant-card">
-    <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fnurserybuy.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fdeliciosa.jpg&f=1&nofb=1&ipt=c93bc2212f0ce6a585d1df64620a1dfa0a630eb9461a56936a47648a63ea380c" />
-    <strong>Monstera Deliciosa</strong>
-    <p>Östermalm, Stockholm</p>
-  </div>
-
-  <div class="plant-card">
-     <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.bnHJI9vY0F_Gl37ncABZHwHaLH%3Fpid%3DApi&f=1&ipt=2913d06da07407ce744f7caf0e38d766d1c054db46178017d04570ca664fce97&ipo=images" />
-    <strong>Snake Plant</strong>
-    <p>Södermalm, Stockholm</p>
-  </div>
-
-  <div class="about-box">
-    <h2>About</h2>
-    <p>
-      Passionate about rare plants and sharing cuttings with the local
-      community.
-    </p>
-  </div>
-</section>
-
-    <!-- RIGHT -->
-    <section class="profile-activity">
-  <h2>Completed swaps</h2>
-
-  <div class="activity-card">
-    <div>
-      <strong>Marble Queen Pothos</strong>
-    <p>Traded with Marcus K.</p>
-  </div>
-
-  <span class="badge">Completed</span>
-  </div>
-
-  <div class="activity-card">
-    <div>
-    <strong>Peace Lily</strong>
-    <p>Traded with Sarah J.</p>
-  </div>
-   
-  <span class="badge">Completed</span>
-  </div>
-
-  <div class="activity-card">
-    <div>
-    <strong>Calathea Orbifolia</strong>
-    <p>Traded with Lars B.</p>
-    </div>
-     <span class="badge">Completed</span>
-
-</div>
-</section>
-
-  </div>
-
-</main>
-
-<script type="module" src="/src/scripts/profile.js"></script>
+          <div class="about-box">
+            <h2>About</h2>
+            <p id="profileAbout"></p>
+          </div>
+        </section>
+        <!-- RIGHT -->
+        <section class="profile-activity">
+          <h2>Active swaps</h2>
+          <div id="activeTradesContainer"></div>
+          <h2>Completed swaps</h2>
+          <div id="completedTradesContainer"></div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="/src/scripts/profile.js"></script>
+    <script type="module" src="/src/scripts/navbar.js"></script>
   </body>
 </html>
