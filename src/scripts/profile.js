@@ -210,29 +210,9 @@ function renderTradeList(trades, container, emptyText) {
 
 //edit name
 let isEditingName = false;
+const editNameBtn = document.getElementById("editNameBtn");
 
-function exitNameEdit() {
-  const input = document.getElementById("nameInput");
-
-  if (input) {
-    nameEl.textContent = input.dataset.original || input.value;
-  }
-
-  isEditingName = false;
-}
-
-async function saveName(value) {
-  try {
-    const res = await updateProfile(token, { name: value });
-    nameEl.textContent = res.name || "Unknown";
-  } catch (err) {
-    console.error(err);
-    exitNameEdit();
-  }
-  isEditingName = false;
-}
-
-nameEl.addEventListener("click", () => {
+function startNameEdit() {
   if (isEditingName) return;
 
   const currentName = nameEl.textContent;
@@ -241,34 +221,53 @@ nameEl.addEventListener("click", () => {
     <input id="nameInput" class="name-input" value="${currentName}" />
   `;
 
-  const input = document.getElementById("nameInput");
-  input.dataset.original = currentName;
-  input.focus();
+  document.getElementById("nameInput").focus();
 
   isEditingName = true;
+  editNameBtn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+}
+
+async function saveName() {
+  const input = document.getElementById("nameInput");
+  if (!input) return;
+
+  const newName = input.value.trim();
+
+  try {
+    const res = await updateProfile(token, { name: newName });
+    nameEl.textContent = res.name || "Unknown";
+  } catch (err) {
+    console.error(err);
+  }
+
+  isEditingName = false;
+  editNameBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
+}
+
+nameEl.addEventListener("click", startNameEdit);
+editNameBtn.addEventListener("click", () => {
+  if (isEditingName) {
+    saveName();
+  } else {
+    startNameEdit();
+  }
 });
 
-nameEl.addEventListener("keydown", async (e) => {
+document.addEventListener("keydown", async (e) => {
   const input = document.getElementById("nameInput");
   if (!input || !isEditingName) return;
 
   if (e.key === "Enter") {
-    await saveName(input.value);
+    await saveName();
   }
 
   if (e.key === "Escape") {
-    exitNameEdit();
+    nameEl.textContent = nameEl.textContent;
+    isEditingName = false;
+    editNameBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
   }
 });
 
-document.addEventListener("click", async (e) => {
-  const input = document.getElementById("nameInput");
-  if (!input || !isEditingName) return;
-
-  if (!nameEl.contains(e.target)) {
-    await saveName(input.value);
-  }
-});
 
 //edit about 
 let isEditingAbout = false;

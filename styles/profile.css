@@ -232,25 +232,16 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  position: relative;
 }
 
-.profile-name::after {
-  content: "\f303";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  font-size: 14px;
-  opacity: 0;
+.edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
   transition: 0.2s ease;
-  margin-left: 6px;
 }
 
-.profile-name:hover::after {
-  opacity: 1;
-}
-
-
-.edit-btn.hidden {
+.profile-name .edit-btn {
   opacity: 0;
   pointer-events: none;
   transition: 0.2s ease;
@@ -259,4 +250,14 @@
 .profile-name:hover .edit-btn {
   opacity: 1;
   pointer-events: auto;
+}
+
+.about .edit-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transition: 0.2s ease;
+}
+
+.about .edit-btn:hover {
+  transform: translateY(-3px);
 }
