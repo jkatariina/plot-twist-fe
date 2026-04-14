@@ -1,4 +1,4 @@
-import { getProfile, getPlants } from "../utils/profileApi.js";
+import { getProfile, updateProfile, getPlants } from "../utils/profileApi.js";
 import { getTrades } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
@@ -149,9 +149,6 @@ function getStatusClass(status) {
 //active & completed trades 
 function renderTrades(trades) {
 
-  console.log("TRADES:", trades);
-
-
   activeTradesContainer.innerHTML = "";
   completedTradesContainer.innerHTML = "";
 
@@ -209,3 +206,102 @@ function renderTradeList(trades, container, emptyText) {
     container.appendChild(card);
   });
 }
+
+
+//edit name
+let isEditingName = false;
+
+function exitNameEdit() {
+  const input = document.getElementById("nameInput");
+
+  if (input) {
+    nameEl.textContent = input.dataset.original || input.value;
+  }
+
+  isEditingName = false;
+}
+
+async function saveName(value) {
+  try {
+    const res = await updateProfile(token, { name: value });
+    nameEl.textContent = res.name || "Unknown";
+  } catch (err) {
+    console.error(err);
+    exitNameEdit();
+  }
+  isEditingName = false;
+}
+
+nameEl.addEventListener("click", () => {
+  if (isEditingName) return;
+
+  const currentName = nameEl.textContent;
+
+  nameEl.innerHTML = `
+    <input id="nameInput" class="name-input" value="${currentName}" />
+  `;
+
+  const input = document.getElementById("nameInput");
+  input.dataset.original = currentName;
+  input.focus();
+
+  isEditingName = true;
+});
+
+nameEl.addEventListener("keydown", async (e) => {
+  const input = document.getElementById("nameInput");
+  if (!input || !isEditingName) return;
+
+  if (e.key === "Enter") {
+    await saveName(input.value);
+  }
+
+  if (e.key === "Escape") {
+    exitNameEdit();
+  }
+});
+
+document.addEventListener("click", async (e) => {
+  const input = document.getElementById("nameInput");
+  if (!input || !isEditingName) return;
+
+  if (!nameEl.contains(e.target)) {
+    await saveName(input.value);
+  }
+});
+
+//edit about 
+let isEditingAbout = false;
+
+editAboutBtn.addEventListener("click", async () => {
+  if (!isEditingAbout) {
+    const currentText = aboutEl.textContent;
+
+    aboutEl.innerHTML = `
+      <textarea id="aboutInput" class="about-input">${currentText}</textarea>
+    `;
+
+    document.getElementById("aboutInput").focus();
+
+    editAboutBtn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+    isEditingAbout = true;
+    return;
+  }
+
+  const input = document.getElementById("aboutInput");
+
+  try {
+    const res = await updateProfile(token, {
+      about: input.value
+    });
+
+    aboutEl.textContent = res.about || "No bio yet";
+    aboutEl.classList.toggle("empty-state", !res.about);
+
+  } catch (err) {
+    console.error(err);
+  }
+
+  editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
+  isEditingAbout = false;
+});

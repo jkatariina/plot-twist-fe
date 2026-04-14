@@ -144,11 +144,30 @@
 }
 
 /* ABOUT BOX */
+.about {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
 .about-box {
   background: #f8f8f8;
   padding: 1rem;
   border-radius: 10px;
   margin-top: 2rem;
+}
+
+
+.edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-btn:hover {
+  transform: translateY(-3px);
 }
 
 /* MOBILE */
@@ -178,4 +197,66 @@
   margin-top: 1rem;
   color: #666;
   font-style: italic;
+}
+
+.name-input {
+  font-weight: 200;
+  font-family: var(--font-body);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 6px 10px;
+  outline: none;
+}
+
+.about-input {
+  width: 100%;
+  min-height: 110px;
+  font-size: 15px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  resize: none;
+}
+
+.about-input:focus,
+.name-input:focus {
+  outline: none;
+  border-color: #2f4f2f;
+  box-shadow: 0 0 0 3px rgba(220, 236, 207, 0.6);
+}
+
+.profile-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-name::after {
+  content: "\f303";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 14px;
+  opacity: 0;
+  transition: 0.2s ease;
+  margin-left: 6px;
+}
+
+.profile-name:hover::after {
+  opacity: 1;
+}
+
+
+.edit-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.profile-name:hover .edit-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
