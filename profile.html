@@ -34,7 +34,13 @@
     <main class="profile">
       <!-- PROFILE -->
       <div class="profile-left">
-        <img id="userImage" class="avatar" alt="Profile picture" />
+        <div class="avatar-wrapper">
+          <div class="avatar-overlay"></div>
+          <img id="userImage" class="avatar" alt="Profile picture"/>
+          <button id="editImageBtn" class="edit-btn-avatar" aria-label="Edit profile picture">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+        </div>
         <div class="profile-meta">
           <div class="profile-name">
             <h1 id="profileName"></h1>

@@ -30,6 +30,50 @@
   object-fit: cover;
 }
 
+.avatar-overlay {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.avatar-overlay:hover {
+  opacity: 70%;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-wrapper .edit-btn-avatar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.avatar-wrapper:hover .edit-btn-avatar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.avatar-wrapper .edit-btn-avatar:hover {
+  transform: translateY(-2px);
+}
+
+
 /* NAME + BADGES */
 .profile-meta h1 {
   font-size: 1.6rem;
@@ -232,6 +276,11 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+
+.profile-name h1 {
+  margin: 0;
+  line-height: 1;
 }
 
 .edit-btn {

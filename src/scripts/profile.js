@@ -304,3 +304,7 @@ editAboutBtn.addEventListener("click", async () => {
   editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
   isEditingAbout = false;
 });
+
+
+//edit profile image
+
