@@ -30,6 +30,50 @@
   object-fit: cover;
 }
 
+.avatar-overlay {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  background: white;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.avatar-overlay:hover {
+  opacity: 70%;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-wrapper .edit-btn-avatar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.avatar-wrapper:hover .edit-btn-avatar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.avatar-wrapper .edit-btn-avatar:hover {
+  transform: translateY(-2px);
+}
+
+
 /* NAME + BADGES */
 .profile-meta h1 {
   font-size: 1.6rem;
@@ -144,11 +188,30 @@
 }
 
 /* ABOUT BOX */
+.about {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
 .about-box {
   background: #f8f8f8;
   padding: 1rem;
   border-radius: 10px;
   margin-top: 2rem;
+}
+
+
+.edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-btn:hover {
+  transform: translateY(-3px);
 }
 
 /* MOBILE */
@@ -178,4 +241,72 @@
   margin-top: 1rem;
   color: #666;
   font-style: italic;
+}
+
+.name-input {
+  font-weight: 200;
+  font-family: var(--font-body);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 6px 10px;
+  outline: none;
+}
+
+.about-input {
+  width: 100%;
+  min-height: 110px;
+  font-size: 15px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  resize: none;
+}
+
+.about-input:focus,
+.name-input:focus {
+  outline: none;
+  border-color: #2f4f2f;
+  box-shadow: 0 0 0 3px rgba(220, 236, 207, 0.6);
+}
+
+.profile-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.profile-name h1 {
+  margin: 0;
+  line-height: 1;
+}
+
+.edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.profile-name .edit-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.profile-name:hover .edit-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.about .edit-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transition: 0.2s ease;
+}
+
+.about .edit-btn:hover {
+  transform: translateY(-3px);
 }
