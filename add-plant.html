@@ -18,9 +18,11 @@
         </label>
         <ul class="nav-links">
           <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
-          <li><a href="/login.html" class="auth-link" id="authLink">Log in</a></li>
+          <li id="loginItem"><a href="/login.html">Log in</a></li>
           <li><a href="/map.html">Map</a></li>
-          <li><a href="/profile.html">Profile</a></li>
+          <!-- <li class="account-item" id="accountItem"><a href="/register.html">Create new acount</a></li> -->
+          <li class="profile-item" id="profileItem"><a href="/profile.html">Profile</a></li>
+          <li class="logout-item" id="logoutItem"><a href="/index.html" id="logoutBtn">Log out</a>
         </ul>
       </nav>
     </header>
@@ -37,10 +39,23 @@
           <input type="text" id="plant-name" name="plant-name" placeholder="Monstera Deliciosa" />
 
           <label for="plant-location">Location</label>
-          <input type="text" id="plant-location" name="plant-location" placeholder="Stockholm" />
+          <select id="plant-location" name="plant-location">
+            <option value="stockholm">Stockholm</option>
+            <option value="goteborg">Göteborg</option>
+            <option value="malmo">Malmö</option>
+            <option value="sundsvall">Sundsvall</option>
+
+          </select>
 
           <label for="plant-image">Image URL</label>
           <input type="text" id="plant-image" name="plant-image" placeholder="Paste image link here" />
+
+          <label for="plant-light">Light level</label>
+          <select id="plant-light" name="plant-light">
+            <option value="1">1 - Low light</option>
+            <option value="2">2 - Medium light</option>
+            <option value="3" selected>3 - Bright light</option>
+          </select>
 
           <label for="plant-description">Description</label>
           <textarea
@@ -54,6 +69,19 @@
         </form>
       </section>
     </main>
+    <div id="authModal" class="auth-modal hidden">
+      <div class="auth-modal-content">
+        <h2>Log in to add plant</h2>
+
+        <div class="auth-modal-actions">
+          <a href="/login.html" class="auth-btn">Log in</a>
+          <a href="/register.html" class="auth-btn secondary">Create account</a>
+        </div>
+
+          <button id="closeAuthModal" class="close-auth-modal">Close</button>
+
+      </div>
+    </div>
 
     <script type="module" src="/src/scripts/add-plant.js"></script>
   </body>

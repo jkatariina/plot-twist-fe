@@ -52,7 +52,9 @@ function renderPlants(plants) {
 // load plants
 async function loadPlants() {
     try {
-        allPlants = await getPlants();
+        allPlants = await getPlants();  
+                console.log("ALL PLANTS:", allPlants);
+
         renderPlants(allPlants);
     } catch (err) {
         console.error("Failed to load plants:", err);
@@ -69,7 +71,7 @@ async function syncPlants() {
         allPlants = plants;
         renderPlants(plants);
 
-        filterPlantsByDistance();
+       filterPlantsByDistance();
 
     } catch (err) {
         console.error("Sync failed:", err);
@@ -162,4 +164,4 @@ function filterPlantsByDistance() {
     });
 
     renderPlants(nearbyPlants);
-}
+} 
