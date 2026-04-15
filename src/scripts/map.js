@@ -1,4 +1,4 @@
-import { getPlants, createPlant } from "../utils/mapApi.js";
+import { getPlants } from "../utils/mapApi.js";
 
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
@@ -81,28 +81,6 @@ async function syncPlants() {
 }
 
 syncPlants();
-
-// create plant
-map.on("click", async (e) => {
-    try {
-        const newPlant = {
-            name: "New plant",
-            description: "Created from map",
-            image: "https://via.placeholder.com/150",
-            lightRequirements: "Medium",
-            coordinates: {
-                lat: e.latlng.lat,
-                lng: e.latlng.lng,
-            },
-            owner: "YOUR_USER_ID_HERE"
-        };
-
-        await createPlant(newPlant);
-        loadPlants();
-    } catch (err) {
-        console.error("Create plant failed:", err);
-    }
-});
 
 
 // user location
