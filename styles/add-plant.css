@@ -1,5 +1,9 @@
 /* ADD PLANT PAGE */
 
+body, html {
+  font-family: var(--font-body);
+}
+
 .add-plant-page {
   max-width: 800px;
   margin: 0 auto;
@@ -65,6 +69,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
     transform 0.2s ease;
   appearance: none;
+  font-family: var(--font-body);
 }
 
 .add-plant-form textarea {
