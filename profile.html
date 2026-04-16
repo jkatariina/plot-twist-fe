@@ -37,9 +37,20 @@
       </div>
       <!-- PROFILE -->
       <div class="profile-left">
-        <img id="userImage" class="avatar" alt="Profile picture" />
+        <div class="avatar-wrapper">
+          <div class="avatar-overlay"></div>
+          <img id="userImage" class="avatar" alt="Profile picture"/>
+          <button id="editImageBtn" class="edit-btn-avatar" aria-label="Edit profile picture">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+        </div>
         <div class="profile-meta">
-          <h1 id="profileName"></h1>
+          <div class="profile-name">
+            <h1 id="profileName"></h1>
+            <button id="editNameBtn" class="edit-btn">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
           <p id="profileEmail"></p>
           <div class="profile-badges">
             <span class="badge" id="plantCountBadge"></span>
@@ -52,9 +63,13 @@
         <section class="profile-plants">
           <h2>Active plant listings</h2>
             <div id="plantsContainer"></div>
-
           <div class="about-box">
-            <h2>About</h2>
+            <div class="about">
+              <h2>About</h2>
+              <button id="editAboutBtn" class="edit-btn" aria-label="Edit about">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
             <p id="profileAbout"></p>
           </div>
         </section>
