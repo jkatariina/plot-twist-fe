@@ -25,6 +25,10 @@ let showNearbyOnly = false;
 
 const distanceToggle = document.getElementById("distanceToggle");
 
+function showDistanceMessage(message) {
+    window.alert(message);
+}
+
 
 // render plants
 function renderPlants(plants) {
@@ -99,6 +103,13 @@ map.on("locationfound", (e) => {
 
     const bounds = L.latLng(userLocation).toBounds(radius);
 
+    if (showNearbyOnly) {
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+    }
+
     if (!hasCenteredOnce) {
         setTimeout(() => {
             map.fitBounds(bounds, {
@@ -134,6 +145,21 @@ distanceToggle?.addEventListener("change", (event) => {
     showNearbyOnly = event.target.checked;
 
     if (showNearbyOnly) {
+        if (!userLocation) {
+            showNearbyOnly = false;
+            event.target.checked = false;
+            showDistanceMessage("We couldn't get your location. Please allow location access and try again.");
+            return;
+        }
+
+        const radius = 10000;
+        const bounds = L.latLng(userLocation).toBounds(radius);
+
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+
         filterPlantsByDistance();
         return;
     }
