@@ -21,6 +21,13 @@ let markers = [];
 let allPlants = [];
 let userLocation = null;
 let hasCenteredOnce = false;
+let showNearbyOnly = false;
+
+const distanceToggle = document.getElementById("distanceToggle");
+
+function showDistanceMessage(message) {
+    window.alert(message);
+}
 
 
 // render plants
@@ -70,8 +77,9 @@ async function syncPlants() {
         const plants = await getPlants();
         allPlants = plants;
         renderPlants(plants);
-
-       filterPlantsByDistance();
+    if (showNearbyOnly){
+        filterPlantsByDistance();
+    }
 
     } catch (err) {
         console.error("Sync failed:", err);
@@ -97,6 +105,13 @@ map.on("locationfound", (e) => {
 
     const bounds = L.latLng(userLocation).toBounds(radius);
 
+    if (showNearbyOnly) {
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+    }
+
     if (!hasCenteredOnce) {
         setTimeout(() => {
             map.fitBounds(bounds, {
@@ -118,11 +133,40 @@ map.on("locationfound", (e) => {
     .addTo(map)
     .bindPopup("You are here 📍");
 
-    filterPlantsByDistance();
+    if (showNearbyOnly) {
+        filterPlantsByDistance();
+    }
+    
 });
 
 map.on("locationerror", (err) => {
     console.error("LOCATION ERROR:", err.message);
+});
+
+distanceToggle?.addEventListener("change", (event) => {
+    showNearbyOnly = event.target.checked;
+
+    if (showNearbyOnly) {
+        if (!userLocation) {
+            showNearbyOnly = false;
+            event.target.checked = false;
+            showDistanceMessage("We couldn't get your location. Please allow location access and try again.");
+            return;
+        }
+
+        const radius = 10000;
+        const bounds = L.latLng(userLocation).toBounds(radius);
+
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+
+        filterPlantsByDistance();
+        return;
+    }
+
+    renderPlants(allPlants);
 });
 
 
@@ -142,4 +186,4 @@ function filterPlantsByDistance() {
     });
 
     renderPlants(nearbyPlants);
-} 
+}
