@@ -38,7 +38,7 @@ export async function apiFetch(url, options = {}) {
             }
 
             // Hämta en ny access token från din backend från /auth/refresh
-            const refreshUrl = new URL("api/auth/refresh", getBaseUrl());
+            const refreshUrl = new URL("/auth/refresh", getBaseUrl());
             const refreshRes = await fetch(refreshUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
