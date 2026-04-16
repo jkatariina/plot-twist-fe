@@ -21,6 +21,9 @@ let markers = [];
 let allPlants = [];
 let userLocation = null;
 let hasCenteredOnce = false;
+let showNearbyOnly = false;
+
+const distanceToggle = document.getElementById("distanceToggle");
 
 
 // render plants
@@ -68,8 +71,9 @@ async function syncPlants() {
         const plants = await getPlants();
         allPlants = plants;
         renderPlants(plants);
-
+    if (showNearbyOnly){
         filterPlantsByDistance();
+    }
 
     } catch (err) {
         console.error("Sync failed:", err);
@@ -116,11 +120,25 @@ map.on("locationfound", (e) => {
     .addTo(map)
     .bindPopup("You are here 📍");
 
-    filterPlantsByDistance();
+    if (showNearbyOnly) {
+        filterPlantsByDistance();
+    }
+    
 });
 
 map.on("locationerror", (err) => {
     console.error("LOCATION ERROR:", err.message);
+});
+
+distanceToggle?.addEventListener("change", (event) => {
+    showNearbyOnly = event.target.checked;
+
+    if (showNearbyOnly) {
+        filterPlantsByDistance();
+        return;
+    }
+
+    renderPlants(allPlants);
 });
 
 
