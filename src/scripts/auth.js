@@ -26,7 +26,9 @@ function setErrorMessage(message) {
     errorMessage.style.display = "block";
 }
 
-loginBtn && loginBtn.addEventListener("click", async (e) => {
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     setErrorMessage("");
@@ -39,15 +41,12 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         return;
     }
 
+    if (loginBtn.disabled) return;
+
     loginBtn.disabled = true;
 
     try {
         const data = await login(email, password);
-
-        if (data?.error || data?.message) {
-            setErrorMessage("Wrong email or password");
-            return;
-        }
 
         if (!data?.token) {
             setErrorMessage("Wrong email or password");
@@ -55,13 +54,10 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         }
 
         localStorage.setItem("token", data.token);
-
-        setErrorMessage("");
         window.location.href = "/map.html";
 
     } catch (error) {
-        console.error("LOGIN ERROR:", error);
-
+        console.error(error);
         setErrorMessage("Wrong email or password");
     } finally {
         loginBtn.disabled = false;
