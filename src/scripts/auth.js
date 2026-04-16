@@ -49,12 +49,13 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
             return;
         }
 
-        if (!data?.token) {
+        if (!data?.accessToken) {
             setErrorMessage("Wrong email or password");
             return;
         }
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
 
         setErrorMessage("");
         window.location.href = "/map.html";
@@ -134,12 +135,6 @@ submitBtn?.addEventListener("click", async (e) => {
 
         if (data?.error || !data) {
             showError(errorMessageRegister, data?.message || "Email already exist");
-            return;
-        }
-
-        if (data?.token) {
-            localStorage.setItem("token", data.token);
-            window.location.href = "/map.html";
             return;
         }
 

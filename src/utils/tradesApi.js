@@ -1,15 +1,8 @@
-import { getBaseUrl } from "../utils/api.js";
+import { apiFetch, getBaseUrl } from "../utils/api.js";
 
-export async function getTrades(token) {
-    if (!token) {
-        throw new Error("No token provided");
-    }
+export async function getTrades() {
 
-    const res = await fetch(`${getBaseUrl()}/me/trades`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    const res = await apiFetch(`${getBaseUrl()}/me/trades`);
 
     if (!res.ok) {
         throw new Error(`Failed to fetch trades: ${res.status}`);
@@ -18,11 +11,7 @@ export async function getTrades(token) {
     const content = await res.json();
 
     const result = content.map(async (item) => {
-        const trade = await fetch(`${getBaseUrl()}/trades/${item._id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const trade = await apiFetch(`${getBaseUrl()}/trades/${item._id}`);
 
         return trade.json();
     });
