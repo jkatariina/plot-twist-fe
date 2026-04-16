@@ -224,6 +224,8 @@ function hideLoader() {
     loader.remove();
   }, 500);
 }
+
+
 //edit name
 let isEditingName = false;
 const editNameBtn = document.getElementById("editNameBtn");
