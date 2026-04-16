@@ -59,7 +59,9 @@ function renderPlants(plants) {
 // load plants
 async function loadPlants() {
     try {
-        allPlants = await getPlants();
+        allPlants = await getPlants();  
+                console.log("ALL PLANTS:", allPlants);
+
         renderPlants(allPlants);
     } catch (err) {
         console.error("Failed to load plants:", err);
