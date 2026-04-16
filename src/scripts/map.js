@@ -1,4 +1,4 @@
-import { getPlants, createPlant } from "../utils/mapApi.js";
+import { getPlants } from "../utils/mapApi.js";
 
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
@@ -21,6 +21,13 @@ let markers = [];
 let allPlants = [];
 let userLocation = null;
 let hasCenteredOnce = false;
+let showNearbyOnly = false;
+
+const distanceToggle = document.getElementById("distanceToggle");
+
+function showDistanceMessage(message) {
+    window.alert(message);
+}
 
 
 // render plants
@@ -52,7 +59,9 @@ function renderPlants(plants) {
 // load plants
 async function loadPlants() {
     try {
-        allPlants = await getPlants();
+        allPlants = await getPlants();  
+                console.log("ALL PLANTS:", allPlants);
+
         renderPlants(allPlants);
     } catch (err) {
         console.error("Failed to load plants:", err);
@@ -68,8 +77,9 @@ async function syncPlants() {
         const plants = await getPlants();
         allPlants = plants;
         renderPlants(plants);
-
+    if (showNearbyOnly){
         filterPlantsByDistance();
+    }
 
     } catch (err) {
         console.error("Sync failed:", err);
@@ -79,28 +89,6 @@ async function syncPlants() {
 }
 
 syncPlants();
-
-// create plant
-map.on("click", async (e) => {
-    try {
-        const newPlant = {
-            name: "New plant",
-            description: "Created from map",
-            image: "https://via.placeholder.com/150",
-            lightRequirements: "Medium",
-            coordinates: {
-                lat: e.latlng.lat,
-                lng: e.latlng.lng,
-            },
-            owner: "YOUR_USER_ID_HERE"
-        };
-
-        await createPlant(newPlant);
-        loadPlants();
-    } catch (err) {
-        console.error("Create plant failed:", err);
-    }
-});
 
 
 // user location
@@ -116,6 +104,13 @@ map.on("locationfound", (e) => {
     const radius = 10000;
 
     const bounds = L.latLng(userLocation).toBounds(radius);
+
+    if (showNearbyOnly) {
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+    }
 
     if (!hasCenteredOnce) {
         setTimeout(() => {
@@ -138,11 +133,40 @@ map.on("locationfound", (e) => {
     .addTo(map)
     .bindPopup("You are here 📍");
 
-    filterPlantsByDistance();
+    if (showNearbyOnly) {
+        filterPlantsByDistance();
+    }
+    
 });
 
 map.on("locationerror", (err) => {
     console.error("LOCATION ERROR:", err.message);
+});
+
+distanceToggle?.addEventListener("change", (event) => {
+    showNearbyOnly = event.target.checked;
+
+    if (showNearbyOnly) {
+        if (!userLocation) {
+            showNearbyOnly = false;
+            event.target.checked = false;
+            showDistanceMessage("We couldn't get your location. Please allow location access and try again.");
+            return;
+        }
+
+        const radius = 10000;
+        const bounds = L.latLng(userLocation).toBounds(radius);
+
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 13
+        });
+
+        filterPlantsByDistance();
+        return;
+    }
+
+    renderPlants(allPlants);
 });
 
 

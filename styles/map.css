@@ -5,6 +5,43 @@
     background: white;
 }
 
+.map-section {
+    position: relative;
+}
+
+.distance-toggle {
+    position: absolute;
+    right: 1rem;
+    bottom: 1.25rem;
+    z-index: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(30, 61, 47, 0.12);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+    color: #1e3d2f;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+.distance-toggle input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: #1e3d2f;
+    cursor: pointer;
+}
+
+.distance-toggle:hover {
+    background: #ffffff;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
 #map {
     height: calc(100vh - 80px);
 }
@@ -42,4 +79,13 @@
     background: #222;
     color: white;
     margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .distance-toggle {
+        right: 0.75rem;
+        left: 0.75rem;
+        bottom: 1rem;
+        justify-content: center;
+    }
 }

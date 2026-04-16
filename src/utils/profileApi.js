@@ -1,5 +1,6 @@
 import { getBaseUrl } from "../utils/api.js";
 
+//profile
 export async function getProfile(token) {
     if (!token) {
         throw new Error("No token provided");
@@ -18,8 +19,29 @@ export async function getProfile(token) {
     return res.json();
 }
 
-/* ---------------- PLANTS ---------------- */
+//update profile
+export async function updateProfile(token, data) {
+    if (!token) {
+        throw new Error("No token provided");
+    }
 
+    const res = await fetch(`${getBaseUrl()}/me`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to update profile: ${res.status}`);
+    }
+
+    return res.json();
+}
+
+//plants
 export async function getPlants(token) {
     if (!token) {
         throw new Error("No token provided");
