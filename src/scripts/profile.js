@@ -14,14 +14,15 @@ const completedTradesContainer = document.getElementById("completedTradesContain
 
 const token = localStorage.getItem("token");
 
+const loader = document.getElementById("pageLoader");
+
 
 if (!token) {
   window.location.href = "/login.html";
 }
 
-// init profile
-initProfile();
 
+// init profile
 async function initProfile() {
   try {
     const user = await getProfile(token);
@@ -30,11 +31,17 @@ async function initProfile() {
 
     renderProfile(user, plants);
     renderTrades(trades);
+
+    hideLoader();
+
   } catch (err) {
     console.error("Failed to load profile:", err);
+
+    hideLoader();
   }
 }
 
+initProfile();
 
 // render profile 
 function renderProfile(user, plants = []) {
@@ -149,9 +156,6 @@ function getStatusClass(status) {
 //active & completed trades 
 function renderTrades(trades) {
 
-  console.log("TRADES:", trades);
-
-
   activeTradesContainer.innerHTML = "";
   completedTradesContainer.innerHTML = "";
 
@@ -208,4 +212,15 @@ function renderTradeList(trades, container, emptyText) {
 
     container.appendChild(card);
   });
+}
+
+
+function hideLoader() {
+  if (!loader) return;
+
+  loader.classList.add("hide");
+
+  setTimeout(() => {
+    loader.remove();
+  }, 500);
 }
