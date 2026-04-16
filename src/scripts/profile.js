@@ -14,14 +14,15 @@ const completedTradesContainer = document.getElementById("completedTradesContain
 
 const token = localStorage.getItem("token");
 
+const loader = document.getElementById("pageLoader");
+
 
 if (!token) {
   window.location.href = "/login.html";
 }
 
-// init profile
-initProfile();
 
+// init profile
 async function initProfile() {
   try {
     const user = await getProfile(token);
@@ -30,11 +31,17 @@ async function initProfile() {
 
     renderProfile(user, plants);
     renderTrades(trades);
+
+    hideLoader();
+
   } catch (err) {
     console.error("Failed to load profile:", err);
+
+    hideLoader();
   }
 }
 
+initProfile();
 
 // render profile 
 function renderProfile(user, plants = []) {
@@ -208,6 +215,15 @@ function renderTradeList(trades, container, emptyText) {
 }
 
 
+function hideLoader() {
+  if (!loader) return;
+
+  loader.classList.add("hide");
+
+  setTimeout(() => {
+    loader.remove();
+  }, 500);
+}
 //edit name
 let isEditingName = false;
 const editNameBtn = document.getElementById("editNameBtn");
