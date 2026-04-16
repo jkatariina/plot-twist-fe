@@ -184,7 +184,6 @@
 .page-loader {
   position: fixed;
   inset: 0;
-  font-size: 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -200,4 +199,8 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+}
+
+.page-loader i {
+  font-size: 56px;
 }
