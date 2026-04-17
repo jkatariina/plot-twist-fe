@@ -79,7 +79,7 @@ form?.addEventListener("submit", async (event) => {
 
   const token = localStorage.getItem("accessToken");
   const name = nameInput?.value.trim();
-  const image = imageInput?.value.trim();
+  const imageFile = imageInput?.files?.[0];
   const lightRequirements = Number(lightInput?.value);
   const description = descriptionInput?.value.trim();
   const location = locationInput?.value;
@@ -89,17 +89,21 @@ form?.addEventListener("submit", async (event) => {
     return;
   }
 
+  if (!imageFile) {
+    setFormMessage("Please select an image file.");
+    return;
+  }
+
   const coordinates = getCoordinates(location);
-  const plantData = {
-    name,
-    image,
-    description,
-    lightRequirements,
-    coordinates: {
-      lat: coordinates.lat + Math.random() * 0.001,
-      lng: coordinates.lng + Math.random() * 0.001,
-    },
-  };
+  const randomizedLat = coordinates.lat + Math.random() * 0.001;
+  const randomizedLng = coordinates.lng + Math.random() * 0.001;
+
+  const plantData = new FormData();
+  plantData.append("name", name);
+  plantData.append("description", description);
+  plantData.append("lightRequirements", String(lightRequirements));
+  plantData.append("coordinates", JSON.stringify({ lat: randomizedLat, lng: randomizedLng }));
+  plantData.append("image", imageFile);
 
   if (submitBtn) {
     submitBtn.disabled = true;
