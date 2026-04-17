@@ -13,12 +13,12 @@ export async function getProfile() {
 }
 
 //update profile
-export async function updateProfile(data) {
-
+export async function updateProfile(token, data) {
     const res = await apiFetch(`${getBaseUrl()}/me`, {
         method: "PATCH",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(data),
     });
