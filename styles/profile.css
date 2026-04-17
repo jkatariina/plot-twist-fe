@@ -137,30 +137,65 @@
 }
 
 /* CARDS */
-
 .plant-card {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.plant-card img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
-
+.plant-card:hover {
+  transform: translateY(-3px);
 }
+
+.plant-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.plant-card.open .plant-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+}
+
+.plant-content {
+  flex: 1;
+}
+
+.plant-details {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #dceccf;
+}
+
+
+.plant-card.open .plant-details {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.plant-card p {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.85rem;
+}
+
 
 .activity-card {
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-
 }
-
 
 .plant-card,
 .activity-card,
@@ -184,7 +219,6 @@
 .trade-card p {
   margin: 0.2rem 0 0 0;
   font-size: 0.85rem;
-  color: #666;
 }
 
 /* ABOUT BOX */
@@ -239,7 +273,6 @@
 
 .empty-state {
   margin-top: 1rem;
-  color: #666;
   font-style: italic;
 }
 
@@ -338,11 +371,16 @@
 
 
 .trade-details {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
   margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid  #dceccf;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
 
-  display: none;
+.trade-card.open .trade-details {
+  max-height: 500px;
+  opacity: 1;
 }
 
 .trade-image {

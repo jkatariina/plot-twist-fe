@@ -88,18 +88,9 @@ function cleanImage(url) {
   return url;
 }
 
-// plants
-function getPlantName(productId, plants) {
-  const plant = plants.find(p => p._id === productId);
-  return plant ? plant.name : "Unknown plant";
-}
+// active plant listings
+function renderPlants(plants) {
 
-function getUserName(userId, users) {
-  const user = users.find(u => u._id === userId);
-  return user ? user.name : "Unknown user";
-}
-
-  function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
   if (!plants.length) {
@@ -111,30 +102,37 @@ function getUserName(userId, users) {
     const card = document.createElement("div");
     card.classList.add("plant-card");
 
-    card.innerHTML = `
-        ${cleanImage(plant.image)
-          ? `<img src="${cleanImage(plant.image)}" alt="${plant.name}" />`
-          : ""
-        }
+ card.innerHTML = `
+  ${
+    cleanImage(plant.image)
+      ? `<img class="plant-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+      : ""
+  }
 
-      <div>
-        <strong>${plant.name || "Unnamed plant"}</strong>
+  <div class="plant-content">
 
-        <p>${plant.description || "No description"}</p>
+    <strong>${plant.name || "Unnamed plant"}</strong>
 
-        <p>
-          Light requirements: ${plant.lightRequirements ?? "N/A"}
-        </p>
+    <p>${plant.description || "No description"}</p>
 
-        <small>
-          ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
-        </small>
-      </div>
-    `;
-    
+    <div class="plant-details">
+      <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
+      <p>
+        <strong>Created at:</strong>
+        ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
+      </p>
+    </div>
+
+  </div>
+`;
+
+
+card.addEventListener("click", () => {
+  card.classList.toggle("open");
+});
+
     plantsContainer.appendChild(card);
   });
-  
 }
 
 // helpers
@@ -217,13 +215,11 @@ trades.forEach(trade => {
   `;
 
   const content = card.querySelector(".trade-content");
-  const details = card.querySelector(".trade-details");
 
   content.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    const isOpen = details.style.display === "block";
-    details.style.display = isOpen ? "none" : "block";
+  card.classList.toggle("open");
   });
 
   container.appendChild(card);
@@ -240,6 +236,7 @@ function hideLoader() {
     loader.remove();
   }, 500);
 }
+
 //edit name
 let isEditingName = false;
 const editNameBtn = document.getElementById("editNameBtn");
