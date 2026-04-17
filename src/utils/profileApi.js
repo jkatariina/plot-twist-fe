@@ -1,16 +1,9 @@
-import { getBaseUrl } from "../utils/api.js";
+import { apiFetch, getBaseUrl } from "../utils/api.js";
 
 //profile
-export async function getProfile(token) {
-    if (!token) {
-        throw new Error("No token provided");
-    }
+export async function getProfile() {
 
-    const res = await fetch(`${getBaseUrl()}/me`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    const res = await apiFetch(`${getBaseUrl()}/me`);
 
     if (!res.ok) {
         throw new Error(`Failed to fetch profile: ${res.status}`);
@@ -20,16 +13,12 @@ export async function getProfile(token) {
 }
 
 //update profile
-export async function updateProfile(token, data) {
-    if (!token) {
-        throw new Error("No token provided");
-    }
+export async function updateProfile(data) {
 
-    const res = await fetch(`${getBaseUrl()}/me`, {
+    const res = await apiFetch(`${getBaseUrl()}/me`, {
         method: "PATCH",
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
     });
@@ -42,16 +31,9 @@ export async function updateProfile(token, data) {
 }
 
 //plants
-export async function getPlants(token) {
-    if (!token) {
-        throw new Error("No token provided");
-    }
+export async function getPlants() {
 
-    const res = await fetch(`${getBaseUrl()}/me/plants`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    const res = await apiFetch(`${getBaseUrl()}/me/plants`);
 
     if (!res.ok) {
         throw new Error(`Failed to fetch plants: ${res.status}`);

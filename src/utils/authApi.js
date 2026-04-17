@@ -1,9 +1,9 @@
-import { getBaseUrl } from "../utils/api.js";
+import { apiFetch, getBaseUrl } from "../utils/api.js";
 
 export async function login(email, password) {
     const url = new URL("auth/login", getBaseUrl());
 
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
