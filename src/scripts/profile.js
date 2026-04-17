@@ -184,34 +184,50 @@ function renderTradeList(trades, container, emptyText) {
     return;
   }
 
-  trades.forEach(trade => {
-    const card = document.createElement("div");
-    card.classList.add("trade-card");
+trades.forEach(trade => {
+  const card = document.createElement("div");
+  card.classList.add("trade-card");
 
-    card.innerHTML = `
-      <div>
+  card.innerHTML = `
+    <div class="trade-content">
 
-        <small>
-          ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
-        </small>
+      <small>
+        ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
+      </small>
 
-        <span class="badge ${getStatusClass(trade.status)}">
-          ${formatStatus(trade.status)}
-        </span>
+      <span class="badge ${getStatusClass(trade.status)}">
+        ${formatStatus(trade.status)}
+      </span>
 
+      <p>
+        <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
+        <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
+      </p>
+
+      <div class="trade-details">
+        <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
         <p>
-          <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
-          <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
-        </p>
-
-        <p>
-          <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
+          <strong>${trade.product?.name || "Unknown"}</strong> <br/>
+          ${trade.product?.description || "Unknown"}<br/>
+          <strong>Light requirements: </strong>${trade.product?.lightRequirements || ""}
         </p>
       </div>
-    `;
 
-    container.appendChild(card);
+    </div>
+  `;
+
+  const content = card.querySelector(".trade-content");
+  const details = card.querySelector(".trade-details");
+
+  content.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const isOpen = details.style.display === "block";
+    details.style.display = isOpen ? "none" : "block";
   });
+
+  container.appendChild(card);
+});
 }
 
 

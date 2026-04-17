@@ -335,3 +335,31 @@
 .about .edit-btn:hover {
   transform: translateY(-3px);
 }
+
+
+.trade-details {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid  #dceccf;
+
+  display: none;
+}
+
+.trade-image {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.trade.name {
+  font-size: 12px;
+}
+
+.trade-card.open .trade-details {
+  display: block;
+}
+
+.trade-content {
+  cursor: pointer;
+}
