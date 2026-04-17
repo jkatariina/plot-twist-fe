@@ -12,7 +12,7 @@ const plantsContainer = document.getElementById("plantsContainer");
 const activeTradesContainer = document.getElementById("activeTradesContainer");
 const completedTradesContainer = document.getElementById("completedTradesContainer");
 
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("accessToken");
 
 const loader = document.getElementById("pageLoader");
 

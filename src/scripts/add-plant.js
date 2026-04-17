@@ -77,7 +77,7 @@ form?.addEventListener("submit", async (event) => {
     return;
   }
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
   const name = nameInput?.value.trim();
   const image = imageInput?.value.trim();
   const lightRequirements = Number(lightInput?.value);
