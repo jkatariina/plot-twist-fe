@@ -145,6 +145,27 @@ body {
   background: var(--color-primary-hover);
 }
 
+/* Ser till att pricken kan fästas i hörnet på länken */
+.nav-profile-link {
+    position: relative; 
+    display: inline-block;
+}
+
+/* Själva den röda pricken */
+.notification-badge {
+    position: absolute;
+    top: -5px;          /* Justera dessa för att flytta pricken */
+    right: -10px;       /* Justera dessa för att flytta pricken */
+    background-color: #ff3b30; /* Snygg "Apple"-röd */
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    border: 2px solid white; /* Ger en snygg kant om den överlappar en bild */
+}
+
 .logout-item {
   display: none;
 }

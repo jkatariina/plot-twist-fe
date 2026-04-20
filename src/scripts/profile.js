@@ -171,6 +171,8 @@ function renderTrades(trades) {
     t => t.status === "accepted" || t.status === "rejected"
   );
 
+  localStorage.setItem("seenFinishedTrades", completedTrades.length);
+
   renderTradeList(activeTrades, activeTradesContainer, "No active trades");
   renderTradeList(completedTrades, completedTradesContainer, "No completed trades");
 }
