@@ -1,5 +1,5 @@
 import { getProfile, updateProfile, getPlants } from "../utils/profileApi.js";
-import { getTrades } from "../utils/tradesApi.js";
+import { getTrades, updateTradeStatus } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -27,7 +27,7 @@ async function initProfile() {
   try {
     const user = await getProfile(token);
     const plants = await getPlants(token);
-    const trades = await getTrades(token);
+    const trades = await loadUserTrades();
 
     renderProfile(user, plants);
     renderTrades(trades);
@@ -42,6 +42,12 @@ async function initProfile() {
 }
 
 initProfile();
+
+async function loadUserTrades() {
+  const trades = await getTrades();
+  console.log("Trades for logged in user:", trades);
+  return trades;
+}
 
 // render profile 
 function renderProfile(user, plants = []) {
@@ -141,6 +147,7 @@ function getUserName(userId, users) {
 function formatStatus(status) {
   if (status === "pending") return "Pending";
   if (status === "accepted") return "Accepted";
+  if (status === "approved") return "Approved";
   if (status === "rejected") return "Rejected";
   return status;
 }
@@ -148,6 +155,7 @@ function formatStatus(status) {
 function getStatusClass(status) {
   if (status === "pending") return "badge-pending";
   if (status === "accepted") return "badge-accepted";
+  if (status === "approved") return "badge-accepted";
   if (status === "rejected") return "badge-rejected";
   return "";
 }
@@ -168,7 +176,7 @@ function renderTrades(trades) {
   const activeTrades = trades.filter(t => t.status === "pending");
 
   const completedTrades = trades.filter(
-    t => t.status === "accepted" || t.status === "rejected"
+    t => t.status === "accepted" || t.status === "approved" || t.status === "rejected"
   );
 
   renderTradeList(activeTrades, activeTradesContainer, "No active trades");
@@ -207,11 +215,39 @@ function renderTradeList(trades, container, emptyText) {
         <p>
           <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
         </p>
+
+        ${trade.status === "pending"
+          ? `
+            <div class="trade-actions">
+              <button type="button" class="accept-trade-btn">Accept</button>
+              <button type="button" class="reject-trade-btn">Reject</button>
+            </div>
+          `
+          : ""
+        }
       </div>
     `;
 
+    if (trade.status === "pending") {
+      const acceptBtn = card.querySelector(".accept-trade-btn");
+      const rejectBtn = card.querySelector(".reject-trade-btn");
+
+      acceptBtn.addEventListener("click", () => handleTradeStatusUpdate(trade._id, "approved"));
+      rejectBtn.addEventListener("click", () => handleTradeStatusUpdate(trade._id, "rejected"));
+    }
+
     container.appendChild(card);
   });
+}
+
+async function handleTradeStatusUpdate(tradeId, status) {
+  try {
+    await updateTradeStatus(tradeId, status);
+    const trades = await loadUserTrades();
+    renderTrades(trades);
+  } catch (err) {
+    console.error("Failed to update trade status:", err);
+  }
 }
 
 
@@ -323,4 +359,3 @@ editAboutBtn.addEventListener("click", async () => {
 
 
 //edit profile image
-

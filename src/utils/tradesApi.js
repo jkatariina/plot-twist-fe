@@ -18,3 +18,7 @@ export async function getTrades() {
 
     return await Promise.all(result);
 }
+
+export async function updateTradeStatus(tradeId, status) {
+    throw new Error("Trade update endpoint not implemented yet");
+}

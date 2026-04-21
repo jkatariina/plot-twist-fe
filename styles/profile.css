@@ -187,6 +187,49 @@
   color: #666;
 }
 
+.trade-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.accept-trade-btn,
+.reject-trade-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.accept-trade-btn {
+  background: #1e3d2f;
+  color: white;
+}
+
+.accept-trade-btn:hover {
+  background: #2c5a45;
+  transform: translateY(-2px);
+}
+
+.reject-trade-btn {
+  background: #f0dddd;
+  color: #7a2626;
+}
+
+.reject-trade-btn:hover {
+  background: #e4c9c9;
+  transform: translateY(-2px);
+}
+
+.accept-trade-btn:focus-visible,
+.reject-trade-btn:focus-visible {
+  outline: 2px solid #8fb89b;
+  outline-offset: 2px;
+}
+
 /* ABOUT BOX */
 .about {
   display: flex;
@@ -232,6 +275,15 @@
   }
 
   .add-btn {
+    width: 100%;
+  }
+
+  .trade-actions {
+    flex-direction: column;
+  }
+
+  .accept-trade-btn,
+  .reject-trade-btn {
     width: 100%;
   }
 
