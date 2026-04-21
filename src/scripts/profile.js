@@ -1,4 +1,4 @@
-import { getProfile, updateProfile, getPlants } from "../utils/profileApi.js";
+import { getProfile, updateProfile, getPlants, deleteProduct } from "../utils/profileApi.js";
 import { getTrades, updateTradeStatus } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
@@ -94,18 +94,8 @@ function cleanImage(url) {
   return url;
 }
 
-// plants
-function getPlantName(productId, plants) {
-  const plant = plants.find(p => p._id === productId);
-  return plant ? plant.name : "Unknown plant";
-}
-
-function getUserName(userId, users) {
-  const user = users.find(u => u._id === userId);
-  return user ? user.name : "Unknown user";
-}
-
-  function renderPlants(plants) {
+// active plant listings
+function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
   if (!plants.length) {
@@ -118,29 +108,61 @@ function getUserName(userId, users) {
     card.classList.add("plant-card");
 
     card.innerHTML = `
-        ${cleanImage(plant.image)
-          ? `<img src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+      ${
+        cleanImage(plant.image)
+          ? `<img class="plant-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
           : ""
-        }
+      }
 
-      <div>
+      <button class="delete-plant-btn">X</button>
+
+      <div class="plant-content">
         <strong>${plant.name || "Unnamed plant"}</strong>
-
         <p>${plant.description || "No description"}</p>
 
-        <p>
-          Light requirements: ${plant.lightRequirements ?? "N/A"}
-        </p>
-
-        <small>
-          ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
-        </small>
+        <div class="plant-details">
+          <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
+          <p>
+            <strong>Created at:</strong>
+            ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
+          </p>
+        </div>
       </div>
     `;
-    
+
+//  delete plant
+    const deleteBtn = card.querySelector(".delete-plant-btn");
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        const confirmed = confirm("Are you sure you want to delete this plant?");
+        if (!confirmed) return;
+
+        try {
+          await deleteProduct(plant._id);
+
+          card.remove();
+
+          const currentCount =
+            parseInt(plantCountBadge.textContent) || plants.length;
+
+          plantCountBadge.textContent = `${currentCount - 1} plants`;
+
+        } catch (err) {
+          console.error("Delete failed:", err);
+        }
+      });
+    }
+
+    // toggle card
+    card.addEventListener("click", () => {
+      card.classList.toggle("open");
+    });
+
     plantsContainer.appendChild(card);
   });
-  
 }
 
 // helpers
@@ -192,28 +214,32 @@ function renderTradeList(trades, container, emptyText) {
     return;
   }
 
-  trades.forEach(trade => {
-    const card = document.createElement("div");
-    card.classList.add("trade-card");
+trades.forEach(trade => {
+  const card = document.createElement("div");
+  card.classList.add("trade-card");
 
-    card.innerHTML = `
-      <div>
+  card.innerHTML = `
+    <div class="trade-content">
 
-        <small>
-          ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
-        </small>
+      <small>
+        ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
+      </small>
 
-        <span class="badge ${getStatusClass(trade.status)}">
-          ${formatStatus(trade.status)}
-        </span>
+      <span class="badge ${getStatusClass(trade.status)}">
+        ${formatStatus(trade.status)}
+      </span>
 
+      <p>
+        <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
+        <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
+      </p>
+
+      <div class="trade-details">
+        <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
         <p>
-          <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
-          <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
-        </p>
-
-        <p>
-          <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
+          <strong>${trade.product?.name || "Unknown"}</strong> <br/>
+          ${trade.product?.description || "Unknown"}<br/>
+          <strong>Light requirements: </strong>${trade.product?.lightRequirements || ""}
         </p>
 
         ${trade.status === "pending"
@@ -236,8 +262,8 @@ function renderTradeList(trades, container, emptyText) {
       rejectBtn.addEventListener("click", () => handleTradeStatusUpdate(trade._id, "rejected"));
     }
 
-    container.appendChild(card);
-  });
+  container.appendChild(card);
+});
 }
 
 async function handleTradeStatusUpdate(tradeId, status) {
@@ -260,6 +286,7 @@ function hideLoader() {
     loader.remove();
   }, 500);
 }
+
 //edit name
 let isEditingName = false;
 const editNameBtn = document.getElementById("editNameBtn");
