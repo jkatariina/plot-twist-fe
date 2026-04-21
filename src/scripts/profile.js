@@ -1,4 +1,4 @@
-import { getProfile, updateProfile, getPlants } from "../utils/profileApi.js";
+import { getProfile, updateProfile, getPlants, deleteProduct } from "../utils/profileApi.js";
 import { getTrades } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
@@ -90,7 +90,6 @@ function cleanImage(url) {
 
 // active plant listings
 function renderPlants(plants) {
-
   plantsContainer.innerHTML = "";
 
   if (!plants.length) {
@@ -102,34 +101,59 @@ function renderPlants(plants) {
     const card = document.createElement("div");
     card.classList.add("plant-card");
 
- card.innerHTML = `
-  ${
-    cleanImage(plant.image)
-      ? `<img class="plant-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
-      : ""
-  }
+    card.innerHTML = `
+      ${
+        cleanImage(plant.image)
+          ? `<img class="plant-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+          : ""
+      }
 
-  <div class="plant-content">
+      <button class="delete-plant-btn">X</button>
 
-    <strong>${plant.name || "Unnamed plant"}</strong>
+      <div class="plant-content">
+        <strong>${plant.name || "Unnamed plant"}</strong>
+        <p>${plant.description || "No description"}</p>
 
-    <p>${plant.description || "No description"}</p>
+        <div class="plant-details">
+          <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
+          <p>
+            <strong>Created at:</strong>
+            ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
+          </p>
+        </div>
+      </div>
+    `;
 
-    <div class="plant-details">
-      <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
-      <p>
-        <strong>Created at:</strong>
-        ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
-      </p>
-    </div>
+//  delete plant
+    const deleteBtn = card.querySelector(".delete-plant-btn");
 
-  </div>
-`;
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
 
+        const confirmed = confirm("Are you sure you want to delete this plant?");
+        if (!confirmed) return;
 
-card.addEventListener("click", () => {
-  card.classList.toggle("open");
-});
+        try {
+          await deleteProduct(plant._id);
+
+          card.remove();
+
+          const currentCount =
+            parseInt(plantCountBadge.textContent) || plants.length;
+
+          plantCountBadge.textContent = `${currentCount - 1} plants`;
+
+        } catch (err) {
+          console.error("Delete failed:", err);
+        }
+      });
+    }
+
+    // toggle card
+    card.addEventListener("click", () => {
+      card.classList.toggle("open");
+    });
 
     plantsContainer.appendChild(card);
   });

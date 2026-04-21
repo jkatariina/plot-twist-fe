@@ -30,7 +30,7 @@ export async function updateProfile(token, data) {
     return res.json();
 }
 
-//plants
+// get plants
 export async function getPlants() {
 
     const res = await apiFetch(`${getBaseUrl()}/me/plants`);
@@ -40,4 +40,16 @@ export async function getPlants() {
     }
 
     return res.json();
+}
+
+export async function deleteProduct(id) {
+    const res = await apiFetch(`${getBaseUrl()}/products/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to delete product: ${res.status}`);
+    }
+
+    return true;
 }
