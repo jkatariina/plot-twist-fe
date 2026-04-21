@@ -137,12 +137,13 @@ body {
 
 .plant-item h3 {
     margin: 0px;
-    font-size: 20px;
+    font-size: 16px;
+    text-align: center;
 }
 
 .plant-item p {
     margin: 0px;
-    font-size: 16px;
+    font-size: 12px;
 }
 
 
@@ -161,15 +162,5 @@ body {
     .sidebar {
         width: 250px;
         height: 100%;
-    }
-    
-    .plant-item h3 {
-        margin: 0px;
-        font-size: 16px;
-    }
-
-    .plant-item p {
-        margin: 0px;
-        font-size: 12px;
     }
 }
