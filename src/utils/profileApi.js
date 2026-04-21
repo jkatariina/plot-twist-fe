@@ -14,13 +14,19 @@ export async function getProfile() {
 
 //update profile
 export async function updateProfile(token, data) {
+    const isFormData = data instanceof FormData;
+
     const res = await apiFetch(`${getBaseUrl()}/me`, {
         method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(data),
+        headers: isFormData
+            ? {
+                "Authorization": `Bearer ${token}`
+            }
+            : {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        body: isFormData ? data : JSON.stringify(data),
     });
 
     if (!res.ok) {
