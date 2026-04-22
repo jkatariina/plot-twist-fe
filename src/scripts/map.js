@@ -1,6 +1,7 @@
 import { getPlants } from "../utils/mapApi.js";
 import { createTrade, getTrades } from "../utils/tradesApi.js";
 
+const loader = document.getElementById("pageLoader");
 
 // map init
 const map = L.map("map").setView([59.3293, 18.0686], 12);
@@ -133,6 +134,17 @@ function openPlantPopup(plant) {
     }
 }
 
+function hideLoader() {
+    if (!loader) return;
+
+    loader.classList.add("hide");
+
+    setTimeout(() => {
+        loader.remove();
+    }, 500);
+}
+
+
 //load plants
 async function loadPlants() {
     try {
@@ -146,8 +158,11 @@ async function loadPlants() {
 
         renderSidebar(visiblePlants);
         renderMarkers(visiblePlants);
+        hideLoader();
+
     } catch (err) {
         console.error(err);
+        hideLoader();
     }
 }
 
