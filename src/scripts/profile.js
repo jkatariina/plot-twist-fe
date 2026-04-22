@@ -1,5 +1,5 @@
 import { getProfile, updateProfile, getPlants, deleteProduct } from "../utils/profileApi.js";
-import { getTrades } from "../utils/tradesApi.js";
+import { getTrades, updateTradeStatus } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -32,7 +32,15 @@ async function initProfile() {
     const plants = await getPlants(token);
     const trades = await getTrades(token);
 
-    renderProfile(user, plants);
+    const hiddenPlantIds = trades
+      .filter(t => t.status === "accepted" || t.status === "completed")
+      .map(t => t.product?._id);
+
+    const visiblePlants = plants.filter(p =>
+      !hiddenPlantIds.includes(p._id)
+    );
+
+renderProfile(user, visiblePlants);
     renderTrades(trades);
 
     hideLoader();
@@ -238,6 +246,16 @@ trades.forEach(trade => {
         </p>
       </div>
 
+      ${trade.status === "pending"
+        ? `
+          <div class="trade-actions">
+            <button type="button" class="accept-trade-btn">Accept</button>
+            <button type="button" class="reject-trade-btn">Reject</button>
+          </div>
+        `
+        : ""
+      }
+
     </div>
   `;
 
@@ -249,10 +267,36 @@ trades.forEach(trade => {
   card.classList.toggle("open");
   });
 
+  if (trade.status === "pending") {
+    const acceptBtn = card.querySelector(".accept-trade-btn");
+    const rejectBtn = card.querySelector(".reject-trade-btn");
+
+    acceptBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "accepted");
+    });
+
+    rejectBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "rejected");
+    });
+  }
+
   container.appendChild(card);
 });
 }
 
+async function handleTradeStatusUpdate(tradeId, status) {
+  try {
+
+    await updateTradeStatus(tradeId, status);
+
+    await initProfile();
+
+  } catch (err) {
+    console.error("Failed to update trade status:", err);
+  }
+}
 
 function hideLoader() {
   if (!loader) return;

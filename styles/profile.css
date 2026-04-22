@@ -404,6 +404,55 @@
   cursor: pointer;
 }
 
+.trade-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #dceccf;
+}
+
+.accept-trade-btn,
+.reject-trade-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  pointer-events: auto;
+}
+
+.accept-trade-btn {
+  background: #1e3d2f;
+  color: white;
+}
+
+.accept-trade-btn:hover {
+  background: #2c5a45;
+}
+
+.reject-trade-btn {
+  background: #f0dddd;
+  color: #7a2626;
+}
+
+.reject-trade-btn:hover {
+  background: #e4c9c9;
+}
+
+.accept-trade-btn:hover,
+.reject-trade-btn:hover {
+  opacity: 0.92;
+}
+
+.accept-trade-btn:focus-visible,
+.reject-trade-btn:focus-visible {
+  outline: 2px solid #8fb89b;
+  outline-offset: 2px;
+}
+
 .delete-plant-btn {
   position: absolute;
   top: 2px;
