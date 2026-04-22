@@ -1,5 +1,6 @@
 import { getPlants } from "../utils/mapApi.js";
 
+// map init
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
 // tile layer
@@ -7,32 +8,48 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: "&copy; OpenStreetMap & CartoDB",
 }).addTo(map);
 
-
-// plant icon
+// icon
 const plantIcon = L.icon({
     iconUrl: "public/plant.svg",
     iconSize: [32, 32],
     iconAnchor: [16, 32],
 });
 
-
 // state
-let markers = [];
 let allPlants = [];
-let userLocation = null;
-let hasCenteredOnce = false;
-let showNearbyOnly = false;
+let markers = [];
+let userMarker = null;
 
-const distanceToggle = document.getElementById("distanceToggle");
+//sidebar
+function renderSidebar(plants) {
+    const container = document.getElementById("plantList");
 
-function showDistanceMessage(message) {
-    window.alert(message);
+    container.innerHTML = plants.map(plant => `
+        <div class="plant-item" data-id="${plant._id}">
+            <img src="${plant.image}" />
+            <h3><strong>${plant.name}</strong></h3>
+            <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>
+            <p>${plant.description || ""}</p>
+        </div>
+    `).join("");
+
+    container.querySelectorAll(".plant-item").forEach(el => {
+        el.addEventListener("click", () => {
+            const plant = allPlants.find(p => p._id === el.dataset.id);
+            if (!plant) return;
+
+            openPlantPopup(plant);
+
+            if (window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+    });
 }
 
-
-// render plants
-function renderPlants(plants) {
-    markers.forEach(marker => map.removeLayer(marker));
+// markers
+function renderMarkers(plants) {
+    markers.forEach(m => map.removeLayer(m));
     markers = [];
 
     plants.forEach(plant => {
@@ -44,146 +61,99 @@ function renderPlants(plants) {
         const marker = L.marker([lat, lng], { icon: plantIcon })
             .addTo(map)
             .bindPopup(`
-            <div class="popup-content">
-                <img src="${plant.image}" style="width:150px; height:auto;"/> <b>${plant.name}</b>
-                ${plant.description || ""}
-                <button onclick="sendSwapRequest('${plant._id}')" class="swap-button">Send swap request</button>
-            </div>
+                <div class="popup-content">
+                    <img src="${plant.image}" />
+                    <b>${plant.name}</b>
+                    <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>    
+                    <p>${plant.description || ""}</p>
+                    <button class="swap-button">
+                        Send trade request
+                    </button>
+                </div>
             `);
 
         markers.push(marker);
     });
 }
 
+// plant popup
+function openPlantPopup(plant) {
+    const lat = Number(plant.coordinates?.lat);
+    const lng = Number(plant.coordinates?.lng);
 
-// load plants
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    map.setView([lat, lng], window.innerWidth <= 768 ? 13 : 14);
+
+    const marker = markers.find(m => {
+        const pos = m.getLatLng();
+        return pos.lat === lat && pos.lng === lng;
+    });
+
+    if (marker) {
+        setTimeout(() => marker.openPopup(), 200);
+    }
+}
+
+//load plants
 async function loadPlants() {
     try {
-        allPlants = await getPlants();  
-                console.log("ALL PLANTS:", allPlants);
-
-        renderPlants(allPlants);
+        allPlants = await getPlants();
+        renderSidebar(allPlants);
+        renderMarkers(allPlants);
     } catch (err) {
-        console.error("Failed to load plants:", err);
+        console.error(err);
     }
 }
 
 loadPlants();
 
-
-//set timeout
+// sync plants 
 async function syncPlants() {
     try {
         const plants = await getPlants();
         allPlants = plants;
-        renderPlants(plants);
-    if (showNearbyOnly){
-        filterPlantsByDistance();
-    }
+
+        renderSidebar(plants);
+        renderMarkers(plants);
 
     } catch (err) {
-        console.error("Sync failed:", err);
-    } finally {
-        setTimeout(syncPlants, 5000);
+        console.error(err);
     }
+
+    setTimeout(syncPlants, 20000);
 }
 
 syncPlants();
 
+// find location 
 
-// user location
 map.locate({
     setView: false,
     enableHighAccuracy: true
 });
 
 map.on("locationfound", (e) => {
+    const userLocation = e.latlng;
 
-    userLocation = e.latlng;
-
-    const radius = 10000;
-
-    const bounds = L.latLng(userLocation).toBounds(radius);
-
-    if (showNearbyOnly) {
-        map.fitBounds(bounds, {
-            padding: [30, 30],
-            maxZoom: 13
-        });
+    if (userMarker) {
+        map.removeLayer(userMarker);
     }
 
-    if (!hasCenteredOnce) {
-        setTimeout(() => {
-            map.fitBounds(bounds, {
-                padding: [30, 30],
-                maxZoom: 13
-            });
-        }, 0);
-
-        hasCenteredOnce = true;
-    }
-
-    // user marker
-    L.circleMarker(userLocation, {
+    userMarker = L.circleMarker(userLocation, {
         radius: 10,
         color: "#2c2c2c",
         fillColor: "#4d4d4d",
         fillOpacity: 1
     })
     .addTo(map)
-    .bindPopup("You are here 📍");
+    .bindPopup("📍 You are here")
+    .openPopup();
 
-    if (showNearbyOnly) {
-        filterPlantsByDistance();
-    }
-    
 });
 
 map.on("locationerror", (err) => {
-    console.error("LOCATION ERROR:", err.message);
+    console.warn("Location denied:", err.message);
+
+    alert("We couldn't access your location. Nearby features will not work.");
 });
-
-distanceToggle?.addEventListener("change", (event) => {
-    showNearbyOnly = event.target.checked;
-
-    if (showNearbyOnly) {
-        if (!userLocation) {
-            showNearbyOnly = false;
-            event.target.checked = false;
-            showDistanceMessage("We couldn't get your location. Please allow location access and try again.");
-            return;
-        }
-
-        const radius = 10000;
-        const bounds = L.latLng(userLocation).toBounds(radius);
-
-        map.fitBounds(bounds, {
-            padding: [30, 30],
-            maxZoom: 13
-        });
-
-        filterPlantsByDistance();
-        return;
-    }
-
-    renderPlants(allPlants);
-});
-
-
-// filter plants by distance
-function filterPlantsByDistance() {
-    if (!userLocation) return;
-
-    const radius = 10000;
-
-    const nearbyPlants = allPlants.filter(plant => {
-        const lat = Number(plant.coordinates?.lat);
-        const lng = Number(plant.coordinates?.lng);
-
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
-
-        return userLocation.distanceTo([lat, lng]) <= radius;
-    });
-
-    renderPlants(nearbyPlants);
-}
