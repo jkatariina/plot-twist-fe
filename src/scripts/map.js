@@ -1,5 +1,5 @@
 import { getPlants } from "../utils/mapApi.js";
-import { createTrade } from "../utils/tradesApi.js";
+import { createTrade, getTrades } from "../utils/tradesApi.js";
 
 // map init
 const map = L.map("map").setView([59.3293, 18.0686], 12);
@@ -20,6 +20,7 @@ const plantIcon = L.icon({
 let allPlants = [];
 let markers = [];
 let userMarker = null;
+let hiddenPlantIds = [];
 
 //sidebar
 function renderSidebar(plants) {
@@ -60,6 +61,20 @@ async function sendSwapRequest(productId) {
 
 window.sendSwapRequest = sendSwapRequest;
 
+
+async function fetchHiddenPlants() {
+    try {
+        const trades = await getTrades();
+
+        hiddenPlantIds = trades
+            .filter(t => t.status === "accepted" || t.status === "completed")
+            .map(t => t.product?._id);
+
+    } catch (err) {
+        console.error(err);
+        hiddenPlantIds = [];
+    }
+}
 
 // render plants
 function renderPlants(plants) {
@@ -121,8 +136,15 @@ function openPlantPopup(plant) {
 async function loadPlants() {
     try {
         allPlants = await getPlants();
-        renderSidebar(allPlants);
-        renderMarkers(allPlants);
+
+        await fetchHiddenPlants();
+
+        const visiblePlants = allPlants.filter(p =>
+            !hiddenPlantIds.includes(p._id)
+        );
+
+        renderSidebar(visiblePlants);
+        renderMarkers(visiblePlants);
     } catch (err) {
         console.error(err);
     }
@@ -134,10 +156,15 @@ loadPlants();
 async function syncPlants() {
     try {
         const plants = await getPlants();
-        allPlants = plants;
 
-        renderSidebar(plants);
-        renderMarkers(plants);
+        await fetchHiddenPlants();
+
+        const visiblePlants = plants.filter(p =>
+            !hiddenPlantIds.includes(p._id)
+        );
+
+        renderSidebar(visiblePlants);
+        renderMarkers(visiblePlants);
 
     } catch (err) {
         console.error(err);
@@ -145,6 +172,7 @@ async function syncPlants() {
 
     setTimeout(syncPlants, 20000);
 }
+
 
 syncPlants();
 

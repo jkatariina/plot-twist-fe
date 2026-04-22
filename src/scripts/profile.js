@@ -32,7 +32,15 @@ async function initProfile() {
     const plants = await getPlants(token);
     const trades = await getTrades(token);
 
-    renderProfile(user, plants);
+    const hiddenPlantIds = trades
+      .filter(t => t.status === "accepted" || t.status === "completed")
+      .map(t => t.product?._id);
+
+    const visiblePlants = plants.filter(p =>
+      !hiddenPlantIds.includes(p._id)
+    );
+
+renderProfile(user, visiblePlants);
     renderTrades(trades);
 
     hideLoader();
@@ -280,15 +288,15 @@ trades.forEach(trade => {
 
 async function handleTradeStatusUpdate(tradeId, status) {
   try {
-    console.log("Updating trade status:", { tradeId, status });
+
     await updateTradeStatus(tradeId, status);
-    const trades = await getTrades(token);
-    renderTrades(trades);
+
+    await initProfile();
+
   } catch (err) {
     console.error("Failed to update trade status:", err);
   }
 }
-
 
 function hideLoader() {
   if (!loader) return;
