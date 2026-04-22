@@ -8,11 +8,21 @@ const submitBtn = form?.querySelector(".submit-btn");
 
 const nameInput = document.getElementById("plant-name");
 const imageInput = document.getElementById("plant-image");
+const fileDisplay = document.querySelector(".file-display");
 const lightInput = document.getElementById("plant-light");
 const descriptionInput = document.getElementById("plant-description");
 
 const authModal = document.getElementById("authModal");
 const closeAuthModalBtn = document.getElementById("closeAuthModal");
+
+// SAFE file change (hindrar crash)
+if (imageInput && fileDisplay) {
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+
+    fileDisplay.value = file ? file.name : "";
+  });
+}
 
 // message
 let formMessage = document.getElementById("addPlantMessage");
@@ -40,8 +50,6 @@ map.on("click", (e) => {
 
   selectedCoordinates = { lat, lng };
 
-  if (!map || !plantIcon) return;
-
   if (marker) {
     marker.setLatLng([lat, lng]);
   } else {
@@ -53,8 +61,8 @@ map.on("click", (e) => {
 const addressInput = document.getElementById("plant-address");
 const searchBtn = document.getElementById("searchAddressBtn");
 
-searchBtn.addEventListener("click", async () => {
-  const address = addressInput.value.trim();
+searchBtn?.addEventListener("click", async () => {
+  const address = addressInput?.value?.trim();
   if (!address) return;
 
   try {
@@ -64,13 +72,11 @@ searchBtn.addEventListener("click", async () => {
 
     map.setView([coords.lat, coords.lng], 15);
 
-    setTimeout(() => {
-      if (marker) {
-        marker.setLatLng([coords.lat, coords.lng]);
-      } else {
-        marker = L.marker([coords.lat, coords.lng], { icon: plantIcon }).addTo(map);
-      }
-    }, 150);
+    if (marker) {
+      marker.setLatLng([coords.lat, coords.lng]);
+    } else {
+      marker = L.marker([coords.lat, coords.lng], { icon: plantIcon }).addTo(map);
+    }
 
   } catch (err) {
     setFormMessage("Could not find that address.");
@@ -112,6 +118,7 @@ document.addEventListener("keydown", (e) => {
 
 // submit 
 form?.addEventListener("submit", async (event) => {
+
   event.preventDefault();
   setFormMessage("");
 
@@ -122,10 +129,10 @@ form?.addEventListener("submit", async (event) => {
 
   const token = localStorage.getItem("accessToken");
 
-  const name = nameInput?.value.trim();
+  const name = nameInput?.value?.trim();
   const imageFile = imageInput?.files?.[0];
   const lightRequirements = Number(lightInput?.value);
-  const description = descriptionInput?.value.trim();
+  const description = descriptionInput?.value?.trim();
 
   if (!name || !description || !lightRequirements) {
     setFormMessage("Please fill in all required fields.");

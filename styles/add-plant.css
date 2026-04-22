@@ -11,19 +11,19 @@ body, html {
 }
 
 /* HEADER */
-.add-plant-header {
+.add-plant-text {
   text-align: center;
   margin-bottom: 2.75rem;
 }
 
-.add-plant-header h1 {
+.add-plant-text h1 {
   font-size: clamp(2rem, 3vw, 2.6rem);
   margin-bottom: 0.65rem;
   color: #1e3d2f;
   line-height: 1.1;
 }
 
-.add-plant-header p {
+.add-plant-text p {
   color: #666;
   font-size: 1rem;
   max-width: 34rem;
@@ -234,22 +234,53 @@ body, html {
   border: 1px solid #ddd;
 }
 
+
 .map-hint {
   font-size: 12px;
   opacity: 0.7;
   margin: 0px;  
 }
 
-#searchAddressBtn {
-  margin-top: 1rem;
-  padding: 0.7rem 1.2rem;
-  background: var(--color-primary-hover);
-  color: white;
-  border: none;
+.file-display {
+  width: 100%;
+  padding: 0.95rem 6rem 0.95rem 1rem;
   border-radius: 12px;
+  border: 1px solid #d7ddd8;
+  background: #fcfcfb;
+  font-size: 0.95rem;
+}
+
+.file-input-wrapper, .input-with-button {
+  position: relative;
+  width: 100%;
+}
+
+.input-with-button input {
+  width: 100%;
+  padding-right: 100px;
+}
+
+.file-button, .input-with-button button {
+  position: absolute;
+  text-align: center;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.6rem 0.8rem;
+  background: var(--color-primary-hover);
+  color: white !important;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 12px 24px rgba(30, 61, 47, 0.18);
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 18px rgba(30, 61, 47, 0.18);
+  transition: 0.2s ease;
+  width: 120px; 
+  height: 40px;
+}
+
+.file-button:hover, .input-with-button button:hover {
+  transform: translateY(-50%) scale(1.03);
+  box-shadow: 0 12px 22px rgba(30, 61, 47, 0.22);
 }
