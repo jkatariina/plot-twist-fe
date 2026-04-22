@@ -64,6 +64,9 @@ window.sendSwapRequest = sendSwapRequest;
 // render plants
 function renderPlants(plants) {
     markers.forEach(marker => map.removeLayer(marker));
+}
+
+
 // markers
 function renderMarkers(plants) {
     markers.forEach(m => map.removeLayer(m));
@@ -83,7 +86,8 @@ function renderMarkers(plants) {
                     <b>${plant.name}</b>
                     <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>    
                     <p>${plant.description || ""}</p>
-                    <button class="swap-button">
+
+                    <button class="swap-button" onclick="sendSwapRequest('${plant._id}')">
                         Send trade request
                     </button>
                 </div>
@@ -92,6 +96,7 @@ function renderMarkers(plants) {
         markers.push(marker);
     });
 }
+
 
 // plant popup
 function openPlantPopup(plant) {
@@ -144,7 +149,6 @@ async function syncPlants() {
 syncPlants();
 
 // find location 
-
 map.locate({
     setView: false,
     enableHighAccuracy: true
