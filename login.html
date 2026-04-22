@@ -36,11 +36,11 @@
                 <!-- LOGIN FORM -->
                 <form class="login-form">
                     <h2>Log into Plot Twist</h2>
-                    <input id="emailInput" type="text" placeholder="Email" autocomplete="username">
-                    <input id="passwordInput" type="password" placeholder="Password" autocomplete="password">
+                    <input id="emailInput" type="email" placeholder="Email" autocomplete="username" required>
+                    <input id="passwordInput" type="password" placeholder="Password" autocomplete="password" required>
                     <button id="loginBtn" class="login-btn">Log in</button>
-                    <a href="/forgot-password.html" class="login-link">Forgot password?</a>
-                    <a href="/register.html" class="register-link">Create new account</a>
+                    <a href="/password.html" id="passwordItem" class="login-link">Forgot password?</a>
+                    <a href="/register.html" id="registerItem" class="register-link">Create new account</a>
                 </form>
             </section>
         </main>
@@ -50,9 +50,11 @@
             <div class="footer-content">
                 <p>&copy; 2026 Plot Twist. All rights reserved.</p>
                 <div class="footer-links">
-                    <a href="/map.html">Map</a>
-                    <a href="/add-plant.html">Add plant</a>
-                    <a href="/profile.html">Profile</a>
+                <a href="/terms.html" id="termsItem" >Terms</a>
+                <a href="/privacy.html" id="privacyItem">Privacy</a>
+                <a href="/map.html" id="mapItem">Map</a>
+                <a href="/add-plant.html" id="plantItem">Add plant</a>
+                <a href="/profile.html" id="profileItem">Profile</a>
                 </div>
             </div>
         </footer>

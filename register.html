@@ -35,9 +35,9 @@
                 <!-- SIGN UP FORM -->
                 <form class="register-form">
                     <h2>Sign up into Plot Twist</h2>
-                    <input id="registerFullnameInput" type="text" placeholder="Full name" autocomplete="Name">
-                    <input id="registerEmailInput" type="text" placeholder="Email" autocomplete="email">
-                    <input id="registerPasswordInput" type="password" placeholder="Password" autocomplete="password">
+                    <input id="registerFullnameInput" type="text" placeholder="Full name" autocomplete="Name" required>
+                    <input id="registerEmailInput" type="email" placeholder="Email" autocomplete="email" required>
+                    <input id="registerPasswordInput" type="password" placeholder="Password" autocomplete="password" required>
                         <div class="terms">
                         <input type="checkbox" id="registerTerms" name="terms" required>
                         <label for="terms">
@@ -49,6 +49,7 @@
                         </label>
                         </div>                   
                     <button id="submitBtn" class="submit-btn">Submit</button>
+                    <div id="successNotification"></div>
                 </form>
             </section>
         </main>

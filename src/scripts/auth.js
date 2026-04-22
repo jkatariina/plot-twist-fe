@@ -6,13 +6,15 @@ const loginBtn = document.getElementById("loginBtn");
 
 let errorMessage = document.getElementById("errorMessage");
 
+//login
+
 if (!errorMessage) {
     errorMessage = document.createElement("p");
     errorMessage.id = "errorMessage";
     errorMessage.classList.add("error-message");
     errorMessage.style.display = "none";
 
-    passwordInput && passwordInput.insertAdjacentElement("afterend", errorMessage);
+    loginBtn && loginBtn.insertAdjacentElement("afterEnd", errorMessage);
 }
 
 function setErrorMessage(message) {
@@ -39,31 +41,23 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         return;
     }
 
+    if (!emailInput.checkValidity()) {
+        setErrorMessage("Please enter a valid email");
+        return;
+    }
+
     loginBtn.disabled = true;
 
     try {
         const data = await login(email, password);
 
-        if (data?.error || data?.message) {
-            setErrorMessage("Wrong email or password");
-            return;
-        }
-
-        if (!data?.accessToken) {
-            setErrorMessage("Wrong email or password");
-            return;
-        }
-
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
 
-        setErrorMessage("");
         window.location.href = "/map.html";
 
     } catch (error) {
-        console.error("LOGIN ERROR:", error);
-
-        setErrorMessage("Wrong email or password");
+        setErrorMessage(error.message || "Login failed");
     } finally {
         loginBtn.disabled = false;
     }
@@ -105,15 +99,27 @@ submitBtn?.addEventListener("click", async (e) => {
 
     showError(errorMessageRegister, "");
 
-    const name = registerFullnameInput?.value.trim();
     const email = registerEmailInput?.value.trim();
     const password = registerPasswordInput?.value.trim();
+    const name = registerFullnameInput?.value.trim();
+    const strongPassword = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
     const termsAccepted = termsCheckbox?.checked;
-
-    console.log({ name, email, password, termsAccepted });
 
     if (!name || !email || !password) {
         showError(errorMessageRegister, "Please fill in all fields");
+        return;
+    }
+
+    if (!registerEmailInput.checkValidity()) {
+        showError(errorMessageRegister, "Please enter a valid email");
+        return;
+    }
+
+    if (!strongPassword.test(password)) {
+        showError(
+            errorMessageRegister,
+            "Password must be 8+ characters and include a number"
+        );
         return;
     }
 
@@ -124,26 +130,25 @@ submitBtn?.addEventListener("click", async (e) => {
 
     submitBtn.disabled = true;
 
+
+const successNotification = document.getElementById("successNotification");
+
+if (!successNotification) {
+    console.warn("Success notification element not found");
+}
+
     try {
-        const data = await register(name, email, password);
+        await register(name, email, password);
 
-        if (data?.errors) {
-            const msg = data.errors.map(e => e.msg).join(", ");
-            showError(errorMessageRegister, msg);
-            return;
-        }
-
-        if (data?.error || !data) {
-            showError(errorMessageRegister, data?.message || "Email already exist");
-            return;
-        }
+        alert("Registration successful!");
 
         window.location.href = "/login.html";
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
         showError(errorMessageRegister, error.message || "Something went wrong");
-    } finally {
-        submitBtn.disabled = false;
     }
-});
+
+    submitBtn.disabled = false;
+    }
+);
