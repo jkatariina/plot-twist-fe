@@ -1,4 +1,5 @@
 import { getPlants } from "../utils/mapApi.js";
+import { createTrade } from "../utils/tradesApi.js";
 
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
@@ -28,6 +29,18 @@ const distanceToggle = document.getElementById("distanceToggle");
 function showDistanceMessage(message) {
     window.alert(message);
 }
+
+async function sendSwapRequest(productId) {
+    try {
+        await createTrade(productId);
+        window.alert("Trade request sent!");
+    } catch (err) {
+        console.error("Failed to send trade request:", err);
+        window.alert("Could not send trade request.");
+    }
+}
+
+window.sendSwapRequest = sendSwapRequest;
 
 
 // render plants

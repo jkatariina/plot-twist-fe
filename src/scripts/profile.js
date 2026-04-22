@@ -27,7 +27,7 @@ async function initProfile() {
   try {
     const user = await getProfile(token);
     const plants = await getPlants(token);
-    const trades = await loadUserTrades();
+    const trades = await getTrades(token);
 
     renderProfile(user, plants);
     renderTrades(trades);
@@ -42,12 +42,6 @@ async function initProfile() {
 }
 
 initProfile();
-
-async function loadUserTrades() {
-  const trades = await getTrades();
-  console.log("Trades for logged in user:", trades);
-  return trades;
-}
 
 // render profile 
 function renderProfile(user, plants = []) {
@@ -169,7 +163,6 @@ function renderPlants(plants) {
 function formatStatus(status) {
   if (status === "pending") return "Pending";
   if (status === "accepted") return "Accepted";
-  if (status === "approved") return "Approved";
   if (status === "rejected") return "Rejected";
   return status;
 }
@@ -177,7 +170,6 @@ function formatStatus(status) {
 function getStatusClass(status) {
   if (status === "pending") return "badge-pending";
   if (status === "accepted") return "badge-accepted";
-  if (status === "approved") return "badge-accepted";
   if (status === "rejected") return "badge-rejected";
   return "";
 }
@@ -198,7 +190,7 @@ function renderTrades(trades) {
   const activeTrades = trades.filter(t => t.status === "pending");
 
   const completedTrades = trades.filter(
-    t => t.status === "accepted" || t.status === "approved" || t.status === "rejected"
+    t => t.status === "accepted" || t.status === "rejected"
   );
 
   renderTradeList(activeTrades, activeTradesContainer, "No active trades");
@@ -241,26 +233,43 @@ trades.forEach(trade => {
           ${trade.product?.description || "Unknown"}<br/>
           <strong>Light requirements: </strong>${trade.product?.lightRequirements || ""}
         </p>
-
-        ${trade.status === "pending"
-          ? `
-            <div class="trade-actions">
-              <button type="button" class="accept-trade-btn">Accept</button>
-              <button type="button" class="reject-trade-btn">Reject</button>
-            </div>
-          `
-          : ""
-        }
       </div>
-    `;
 
-    if (trade.status === "pending") {
-      const acceptBtn = card.querySelector(".accept-trade-btn");
-      const rejectBtn = card.querySelector(".reject-trade-btn");
+      ${trade.status === "pending"
+        ? `
+          <div class="trade-actions">
+            <button type="button" class="accept-trade-btn">Accept</button>
+            <button type="button" class="reject-trade-btn">Reject</button>
+          </div>
+        `
+        : ""
+      }
 
-      acceptBtn.addEventListener("click", () => handleTradeStatusUpdate(trade._id, "approved"));
-      rejectBtn.addEventListener("click", () => handleTradeStatusUpdate(trade._id, "rejected"));
-    }
+    </div>
+  `;
+
+  const content = card.querySelector(".trade-content");
+
+  content.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+  card.classList.toggle("open");
+  });
+
+  if (trade.status === "pending") {
+    const acceptBtn = card.querySelector(".accept-trade-btn");
+    const rejectBtn = card.querySelector(".reject-trade-btn");
+
+    acceptBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "accepted");
+    });
+
+    rejectBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "rejected");
+    });
+  }
 
   container.appendChild(card);
 });
@@ -269,7 +278,7 @@ trades.forEach(trade => {
 async function handleTradeStatusUpdate(tradeId, status) {
   try {
     await updateTradeStatus(tradeId, status);
-    const trades = await loadUserTrades();
+    const trades = await getTrades(token);
     renderTrades(trades);
   } catch (err) {
     console.error("Failed to update trade status:", err);
