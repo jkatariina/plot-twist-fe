@@ -1,27 +1,52 @@
 import { createPlant } from "../utils/addPlantApi.js";
 import { isLoggedIn } from "../state/authState.js";
 
+// form
 const form = document.getElementById("addPlantForm");
 const submitBtn = form?.querySelector(".submit-btn");
-const authModal = document.getElementById("authModal");
-const closeAuthModalBtn = document.getElementById("closeAuthModal");
 
 const nameInput = document.getElementById("plant-name");
 const imageInput = document.getElementById("plant-image");
 const lightInput = document.getElementById("plant-light");
 const descriptionInput = document.getElementById("plant-description");
-const locationInput = document.getElementById("plant-location");
 
+const authModal = document.getElementById("authModal");
+const closeAuthModalBtn = document.getElementById("closeAuthModal");
+
+// message
 let formMessage = document.getElementById("addPlantMessage");
 
-if (!formMessage && form) {
-  formMessage = document.createElement("p");
-  formMessage.id = "addPlantMessage";
-  formMessage.classList.add("form-message");
-  formMessage.hidden = true;
-  submitBtn?.insertAdjacentElement("beforebegin", formMessage);
-}
+// leaflet 
+const map = L.map("addPlantMap").setView([59.3293, 18.0686], 12);
 
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: "&copy; OpenStreetMap & CartoDB",
+}).addTo(map);
+
+// icon
+const plantIcon = L.icon({
+  iconUrl: "public/plant.svg",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
+
+let selectedCoordinates = null;
+let marker = null;
+
+// set plant location
+map.on("click", (e) => {
+  const { lat, lng } = e.latlng;
+
+  selectedCoordinates = { lat, lng };
+
+  if (marker) {
+    marker.setLatLng(e.latlng);
+  } else {
+    marker = L.marker(e.latlng, { icon: plantIcon }).addTo(map);
+  }
+});
+
+// form message
 function setFormMessage(message) {
   if (!formMessage) return;
 
@@ -43,31 +68,17 @@ function closeAuthModal() {
   authModal?.classList.add("hidden");
 }
 
-function getCoordinates(location) {
-  const coordinatesByLocation = {
-    stockholm: { lat: 59.3293, lng: 18.0686 },
-    goteborg: { lat: 57.7089, lng: 11.9746 },
-    malmo: { lat: 55.605, lng: 13.0038 },
-    sundsvall: { lat: 62.3908, lng: 17.3069 },
-  };
-
-  return coordinatesByLocation[location] || coordinatesByLocation.stockholm;
-}
-
 closeAuthModalBtn?.addEventListener("click", closeAuthModal);
 
-authModal?.addEventListener("click", (event) => {
-  if (event.target === authModal) {
-    closeAuthModal();
-  }
+authModal?.addEventListener("click", (e) => {
+  if (e.target === authModal) closeAuthModal();
 });
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && authModal && !authModal.classList.contains("hidden")) {
-    closeAuthModal();
-  }
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeAuthModal();
 });
 
+// submit 
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   setFormMessage("");
@@ -78,14 +89,14 @@ form?.addEventListener("submit", async (event) => {
   }
 
   const token = localStorage.getItem("accessToken");
+
   const name = nameInput?.value.trim();
   const imageFile = imageInput?.files?.[0];
   const lightRequirements = Number(lightInput?.value);
   const description = descriptionInput?.value.trim();
-  const location = locationInput?.value;
 
-  if (!name || !description || !location || !lightRequirements) {
-    setFormMessage("Please fill in plant name, location, light level and description.");
+  if (!name || !description || !lightRequirements) {
+    setFormMessage("Please fill in all required fields.");
     return;
   }
 
@@ -94,30 +105,27 @@ form?.addEventListener("submit", async (event) => {
     return;
   }
 
-  const coordinates = getCoordinates(location);
-  const randomizedLat = coordinates.lat + Math.random() * 0.001;
-  const randomizedLng = coordinates.lng + Math.random() * 0.001;
+  if (!selectedCoordinates) {
+    setFormMessage("Please select a location on the map.");
+    return;
+  }
 
   const plantData = new FormData();
   plantData.append("name", name);
   plantData.append("description", description);
   plantData.append("lightRequirements", String(lightRequirements));
-  plantData.append("coordinates", JSON.stringify({ lat: randomizedLat, lng: randomizedLng }));
+  plantData.append("coordinates", JSON.stringify(selectedCoordinates));
   plantData.append("image", imageFile);
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-  }
+  submitBtn.disabled = true;
 
   try {
     await createPlant(token, plantData);
     window.location.href = "/profile.html";
-  } catch (error) {
-    console.error("Error creating plant:", error);
-    setFormMessage(error.message || "Something went wrong. Please try again.");
+  } catch (err) {
+    console.error(err);
+    setFormMessage(err.message || "Something went wrong.");
   } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-    }
+    submitBtn.disabled = false;
   }
 });
