@@ -46,9 +46,8 @@ renderProfile(user, visiblePlants);
     hideLoader();
 
   } catch (err) {
-    console.error("Failed to load profile:", err);
-
-    hideLoader();
+    console.error(err);
+    alert(err.message);
   }
 }
 
@@ -155,8 +154,10 @@ function renderPlants(plants) {
 
           plantCountBadge.textContent = `${currentCount - 1} plants`;
 
-        } catch (err) {
-          console.error("Delete failed:", err);
+        } 
+        catch (err) {
+          console.error(err);
+          alert(err.message);
         }
       });
     }
@@ -288,13 +289,10 @@ trades.forEach(trade => {
 
 async function handleTradeStatusUpdate(tradeId, status) {
   try {
-
     await updateTradeStatus(tradeId, status);
-
     await initProfile();
-
   } catch (err) {
-    console.error("Failed to update trade status:", err);
+    alert(err.message);
   }
 }
 
@@ -338,6 +336,7 @@ async function saveName() {
     nameEl.textContent = res.name || "Unknown";
   } catch (err) {
     console.error(err);
+    alert(err.message);
   }
 
   isEditingName = false;
@@ -399,6 +398,7 @@ editAboutBtn.addEventListener("click", async () => {
 
   } catch (err) {
     console.error(err);
+    alert(err.message);
   }
 
   editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
@@ -433,7 +433,9 @@ profileImageInput?.addEventListener("change", async () => {
       imageEl.src = nextImage;
     }
   } catch (err) {
-    console.error("Failed to update profile image:", err);
+    console.error(err);
+    alert(err.message);
+
   } finally {
     if (profileImageInput) {
       profileImageInput.value = "";
