@@ -8,12 +8,16 @@ export function getBaseUrl() {
 
 export async function apiFetch(url, options = {}) {
   let accessToken = localStorage.getItem("accessToken");
+  const isFormDataBody = options.body instanceof FormData;
 
   // Skapa headers och lägg till token om den finns
   const headers = {
-    "Content-Type": "application/json",
     ...options.headers,
   };
+
+  if (!isFormDataBody && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;

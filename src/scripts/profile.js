@@ -7,6 +7,9 @@ const imageEl = document.getElementById("userImage");
 const aboutEl = document.getElementById("profileAbout");
 const plantCountBadge = document.getElementById("plantCountBadge");
 const userStatusBadge = document.getElementById("userStatusBadge");
+const editImageBtn = document.getElementById("editImageBtn");
+const profileImageInput = document.getElementById("profileImageInput");
+const editAboutBtn = document.getElementById("editAboutBtn");
 
 const plantsContainer = document.getElementById("plantsContainer");
 const activeTradesContainer = document.getElementById("activeTradesContainer");
@@ -396,3 +399,41 @@ editAboutBtn.addEventListener("click", async () => {
 
 
 //edit profile image
+editImageBtn?.addEventListener("click", () => {
+  profileImageInput?.click();
+});
+
+profileImageInput?.addEventListener("change", async () => {
+  const selectedFile = profileImageInput.files?.[0];
+
+  if (!selectedFile) {
+    return;
+  }
+
+  const profileData = new FormData();
+  profileData.append("profileImage", selectedFile);
+
+  if (editImageBtn) {
+    editImageBtn.disabled = true;
+  }
+
+  try {
+    const updatedUser = await updateProfile(token, profileData);
+    const nextImage = updatedUser?.profileImage || updatedUser?.user?.profileImage;
+
+    if (nextImage) {
+      imageEl.src = nextImage;
+    }
+  } catch (err) {
+    console.error("Failed to update profile image:", err);
+  } finally {
+    if (profileImageInput) {
+      profileImageInput.value = "";
+    }
+
+    if (editImageBtn) {
+      editImageBtn.disabled = false;
+    }
+  }
+});
+
