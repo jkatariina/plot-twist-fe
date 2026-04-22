@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <title>Plot Twist</title>
+        <link rel="stylesheet" href="/styles/style.css"/>
+        <link rel="stylesheet" href="/styles/terms-and-policy.css"/>
+    </head>
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+        <nav class="nav">
+            <a href="index.html" class="logo">Plot Twist</a>
+            <input type="checkbox" id="menu-toggle"/>
+            <label for="menu-toggle" class="menu-icon">
+            <i class="fa-solid fa-bars hamburger"></i>
+            <i class="fa-solid fa-xmark close"></i>
+            </label>
+            <ul class="nav-links">
+                <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
+                <li id="loginItem"><a href="/login.html">Log in</a></li>
+                <li><a href="/map.html">Map</a></li>
+                <!-- <li class="account-item" id="accountItem"><a href="/register.html">Create new acount</a></li> -->
+                <li class="profile-item" id="profileItem"><a href="/profile.html">Profile</a></li>
+                <li class="logout-item" id="logoutItem"><a href="/index.html" id="logoutBtn">Log out</a>
+            </ul>
+        </nav>
+        </header>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="legal-page">
+                <div class="legal-header">
+                    <h1>Privacy Policy</h1>
+                    <p>Last updated: 22 April 2026</p>
+                </div>
+                <div class="legal-card">
+                    <h2>1. Introduction</h2>
+                    <p>
+                    Plot Twist is a conceptual demo platform for sharing plants between neighbors.
+                    We do not operate as a company and do not process real transactions.
+                    </p>
+
+                    <h2>2. Data we collect</h2>
+                    <ul>
+                    <li>Account information (if provided)</li>
+                    <li>Content you post (images, text, listings)</li>
+                    <li>Basic technical data (device/browser info)</li>
+                    </ul>
+
+                    <h2>3. How we use data</h2>
+                    <ul>
+                    <li>To display content on the platform</li>
+                    <li>To run the demo functionality</li>
+                    <li>To improve user experience</li>
+                    </ul>
+
+                    <p>We do not use data for advertising or sales.</p>
+
+                    <h2>4. Sharing data</h2>
+                    <p>
+                    We do not sell or share your data with third parties.
+                    </p>
+
+                    <h2>5. Data storage</h2>
+                    <p>
+                    Data is stored temporarily and may be deleted at any time.
+                    </p>
+
+                    <h2>6. Security</h2>
+                    <p>
+                    This is a demo system. No strong security guarantees are provided.
+                    Do not submit sensitive information.
+                    </p>
+                    
+                    <h2>7. Your choices</h2>
+                    <ul>
+                    <li>You can stop using the platform at any time</li>
+                    <li>You can request removal of content</li>
+                    </ul>
+
+                    <h2>8. Changes</h2>
+                    <p>
+                    This policy may change as the project evolves.
+                    </p>
+                </div>
+            </div>
+        </main>
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/map.html">Map</a>
+                    <a href="/add-plant.html">Add plant</a>
+                    <a href="/profile.html">Profile</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- PAGE-SPECIFIC JAVASCRIPT -->
+        <script type="module" src="./src/scripts/auth.js"></script>
+        <script type="module" src="./src/scripts/navbar.js"></script>
+    </body>
+</html>
