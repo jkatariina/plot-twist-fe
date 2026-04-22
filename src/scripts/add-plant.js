@@ -1,5 +1,6 @@
 import { createPlant } from "../utils/addPlantApi.js";
 import { isLoggedIn } from "../state/authState.js";
+import { geocodeAddress } from "../utils/mapApi.js";
 
 // form
 const form = document.getElementById("addPlantForm");
@@ -39,12 +40,43 @@ map.on("click", (e) => {
 
   selectedCoordinates = { lat, lng };
 
+  if (!map || !plantIcon) return;
+
   if (marker) {
-    marker.setLatLng(e.latlng);
+    marker.setLatLng([lat, lng]);
   } else {
-    marker = L.marker(e.latlng, { icon: plantIcon }).addTo(map);
+    marker = L.marker([lat, lng], { icon: plantIcon }).addTo(map);
   }
 });
+
+
+const addressInput = document.getElementById("plant-address");
+const searchBtn = document.getElementById("searchAddressBtn");
+
+searchBtn.addEventListener("click", async () => {
+  const address = addressInput.value.trim();
+  if (!address) return;
+
+  try {
+    const coords = await geocodeAddress(address);
+
+    selectedCoordinates = coords;
+
+    map.setView([coords.lat, coords.lng], 15);
+
+    setTimeout(() => {
+      if (marker) {
+        marker.setLatLng([coords.lat, coords.lng]);
+      } else {
+        marker = L.marker([coords.lat, coords.lng], { icon: plantIcon }).addTo(map);
+      }
+    }, 150);
+
+  } catch (err) {
+    setFormMessage("Could not find that address.");
+  }
+});
+
 
 // form message
 function setFormMessage(message) {

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="/styles/add-plant.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   </head>
   <body>
     <header class="site-header">
@@ -42,11 +41,20 @@
 
           <label>Pick plant location</label>
           <div id="addPlantMap" class="add-plant-map"></div>
-          <p class="map-hint">Click on the map to place your plant</p>
+          <p class="map-hint">Click on the map or search for an address to place your plant.  </p>
 
-          <label for="plant-image">Plant image</label>
+          <label for="plant-address">Search address</label>
+          <div class="address-search">
+            <input
+              type="text"
+              id="plant-address"
+              placeholder="Sveavägen 10, Stockholm"
+            />
+            <button type="button" id="searchAddressBtn">Search</button>
+          </div>
+
+          <label for="plant-image">Upload image</label>
           <input type="file" id="plant-image" name="plant-image" accept="image/jpeg, image/png" required />
-
           <label for="plant-light">Light level</label>
           <select id="plant-light" name="plant-light">
             <option value="1">1 - Low light</option>
@@ -90,8 +98,8 @@
         </div>
       </div>
     </footer>
-    <script type="module" src="./src/scripts/map.js"></script>
     <script type="module" src="/src/scripts/add-plant.js"></script>
     <script type="module" src="./src/scripts/navbar.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   </body>
 </html>
