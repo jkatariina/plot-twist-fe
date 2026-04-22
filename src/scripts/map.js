@@ -54,10 +54,9 @@ function renderSidebar(plants) {
 async function sendSwapRequest(productId) {
     try {
         await createTrade(productId);
-        window.alert("Trade request sent!");
+        alert("Trade request sent!");
     } catch (err) {
-        console.error("Failed to send trade request:", err);
-        window.alert("Could not send trade request.");
+        alert(err.message);
     }
 }
 
