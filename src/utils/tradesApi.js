@@ -54,7 +54,7 @@ export async function updateTradeStatus(tradeId, status) {
     });
 
     if (!res.ok) {
-        throw new Error(`Failed to update trade status: ${res.status}`);
+        throw new Error(await getErrorMessage(res));
     }
 
     return res.json();

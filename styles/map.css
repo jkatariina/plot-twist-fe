@@ -60,7 +60,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 5px;
+    gap: 8px;
+    min-width: 170px;
 }
 
 .popup-content img {
@@ -72,13 +73,26 @@
 }
 
 .swap-button {
-    padding: 8px 12px;
+    width: 100%;
+    padding: 10px 14px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: #222;
+    background: #1e3d2f;
     color: white;
     margin-top: 10px;
+    font-weight: 700;
+    transition: 0.2s ease;
+    pointer-events: auto;
+}
+
+.swap-button:hover {
+    background: #2c5a45;
+}
+
+.swap-button:focus-visible {
+    outline: 2px solid #8fb89b;
+    outline-offset: 2px;
 }
 
 @media (max-width: 768px) {

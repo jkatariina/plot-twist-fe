@@ -277,6 +277,7 @@ trades.forEach(trade => {
 
 async function handleTradeStatusUpdate(tradeId, status) {
   try {
+    console.log("Updating trade status:", { tradeId, status });
     await updateTradeStatus(tradeId, status);
     const trades = await getTrades(token);
     renderTrades(trades);
