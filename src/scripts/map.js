@@ -1,171 +1,209 @@
 import { getPlants } from "../utils/mapApi.js";
+import { createTrade, getTrades } from "../utils/tradesApi.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
 
-    // map init
-    const map = L.map("map").setView([59.3293, 18.0686], 12);
+// map init
+const map = L.map("map").setView([59.3293, 18.0686], 12);
 
-    // tile layer
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap & CartoDB",
-    }).addTo(map);
+// tile layer
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution: "&copy; OpenStreetMap & CartoDB",
+}).addTo(map);
 
-    // icon
-    const plantIcon = L.icon({
-        iconUrl: "public/plant.svg",
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
+// icon
+const plantIcon = L.icon({
+    iconUrl: "public/plant.svg",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+});
+
+// state
+let allPlants = [];
+let markers = [];
+let userMarker = null;
+let hiddenPlantIds = [];
+
+//sidebar
+function renderSidebar(plants) {
+    const container = document.getElementById("plantList");
+
+    container.innerHTML = plants.map(plant => `
+        <div class="plant-item" data-id="${plant._id}">
+            <img src="${plant.image}" />
+            <h3><strong>${plant.name}</strong></h3>
+            <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>
+            <p>${plant.description || ""}</p>
+        </div>
+    `).join("");
+
+    container.querySelectorAll(".plant-item").forEach(el => {
+        el.addEventListener("click", () => {
+            const plant = allPlants.find(p => p._id === el.dataset.id);
+            if (!plant) return;
+
+            openPlantPopup(plant);
+
+            if (window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
     });
+}
 
-    // state
-    let allPlants = [];
-    let markers = [];
-    let userMarker = null;
-
-    // sidebar
-    function renderSidebar(plants) {
-        const container = document.getElementById("plantList");
-
-        container.innerHTML = plants.map(plant => `
-            <div class="plant-item" data-id="${plant._id}">
-                <img src="${plant.image}" />
-                <h3><strong>${plant.name}</strong></h3>
-                <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>
-                <p>${plant.description || ""}</p>
-            </div>
-        `).join("");
-
-        container.querySelectorAll(".plant-item").forEach(el => {
-            el.addEventListener("click", () => {
-                const plant = allPlants.find(p => p._id === el.dataset.id);
-                if (!plant) return;
-
-                openPlantPopup(plant);
-
-                if (window.innerWidth <= 768) {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-            });
-        });
+async function sendSwapRequest(productId) {
+    try {
+        await createTrade(productId);
+        window.alert("Trade request sent!");
+    } catch (err) {
+        console.error("Failed to send trade request:", err);
+        window.alert("Could not send trade request.");
     }
+}
 
-    // markers
-    function renderMarkers(plants) {
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
+window.sendSwapRequest = sendSwapRequest;
 
-        plants.forEach(plant => {
 
-            const coords =
-                typeof plant.coordinates === "string"
-                    ? JSON.parse(plant.coordinates)
-                    : plant.coordinates;
+async function fetchHiddenPlants() {
+    try {
+        const trades = await getTrades();
 
-            const lat = Number(coords?.lat);
-            const lng = Number(coords?.lng);
+        hiddenPlantIds = trades
+            .filter(t => t.status === "accepted" || t.status === "completed")
+            .map(t => t.product?._id);
 
-            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-
-            const marker = L.marker([lat, lng], { icon: plantIcon })
-                .addTo(map)
-                .bindPopup(`
-                    <div class="popup-content">
-                        <img src="${plant.image}" />
-                        <b>${plant.name}</b>
-                        <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>    
-                        <p>${plant.description || ""}</p>
-                        <button class="swap-button">
-                            Send trade request
-                        </button>
-                    </div>
-                `);
-
-            markers.push(marker);
-        });
+    } catch (err) {
+        console.error(err);
+        hiddenPlantIds = [];
     }
+}
 
-    // plant popup
-    function openPlantPopup(plant) {
-        const coords =
-            typeof plant.coordinates === "string"
-                ? JSON.parse(plant.coordinates)
-                : plant.coordinates;
+// render plants
+function renderPlants(plants) {
+    markers.forEach(marker => map.removeLayer(marker));
+}
 
-        const lat = Number(coords?.lat);
-        const lng = Number(coords?.lng);
+
+// markers
+function renderMarkers(plants) {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    plants.forEach(plant => {
+        const lat = Number(plant.coordinates?.lat);
+        const lng = Number(plant.coordinates?.lng);
 
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
-        map.setView([lat, lng], window.innerWidth <= 768 ? 13 : 14);
+        const marker = L.marker([lat, lng], { icon: plantIcon })
+            .addTo(map)
+            .bindPopup(`
+                <div class="popup-content">
+                    <img src="${plant.image}" />
+                    <b>${plant.name}</b>
+                    <p><strong>Light requirements: </strong>${plant.lightRequirements || ""}</p>    
+                    <p>${plant.description || ""}</p>
 
-        const marker = markers.find(m => {
-            const pos = m.getLatLng();
-            return pos.lat === lat && pos.lng === lng;
-        });
+                    <button class="swap-button" onclick="sendSwapRequest('${plant._id}')">
+                        Send trade request
+                    </button>
+                </div>
+            `);
 
-        if (marker) {
-            setTimeout(() => marker.openPopup(), 200);
-        }
-    }
+        markers.push(marker);
+    });
+}
 
-    // load plants
-    async function loadPlants() {
-        try {
-            allPlants = await getPlants();
-            renderSidebar(allPlants);
-            renderMarkers(allPlants);
-        } catch (err) {
-            console.error(err);
-        }
-    }
 
-    loadPlants();
+// plant popup
+function openPlantPopup(plant) {
+    const lat = Number(plant.coordinates?.lat);
+    const lng = Number(plant.coordinates?.lng);
 
-    // sync plants 
-    async function syncPlants() {
-        try {
-            const plants = await getPlants();
-            allPlants = plants;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
-            renderSidebar(plants);
-            renderMarkers(plants);
+    map.setView([lat, lng], window.innerWidth <= 768 ? 13 : 14);
 
-        } catch (err) {
-            console.error(err);
-        }
-
-        setTimeout(syncPlants, 20000);
-    }
-
-    syncPlants();
-
-    // find location 
-    map.locate({
-        setView: false,
-        enableHighAccuracy: true
+    const marker = markers.find(m => {
+        const pos = m.getLatLng();
+        return pos.lat === lat && pos.lng === lng;
     });
 
-    map.on("locationfound", (e) => {
-        const userLocation = e.latlng;
+    if (marker) {
+        setTimeout(() => marker.openPopup(), 200);
+    }
+}
 
-        if (userMarker) {
-            map.removeLayer(userMarker);
-        }
+//load plants
+async function loadPlants() {
+    try {
+        allPlants = await getPlants();
 
-        userMarker = L.circleMarker(userLocation, {
-            radius: 10,
-            color: "#2c2c2c",
-            fillColor: "#4d4d4d",
-            fillOpacity: 1
-        })
-        .addTo(map)
-        .bindPopup("📍 You are here")
-        .openPopup();
-    });
+        await fetchHiddenPlants();
 
-    map.on("locationerror", (err) => {
-        console.warn("Location denied:", err.message);
-        alert("We couldn't access your location. Nearby features will not work.");
-    });
+        const visiblePlants = allPlants.filter(p =>
+            !hiddenPlantIds.includes(p._id)
+        );
 
+        renderSidebar(visiblePlants);
+        renderMarkers(visiblePlants);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+loadPlants();
+
+// sync plants 
+async function syncPlants() {
+    try {
+        const plants = await getPlants();
+
+        await fetchHiddenPlants();
+
+        const visiblePlants = plants.filter(p =>
+            !hiddenPlantIds.includes(p._id)
+        );
+
+        renderSidebar(visiblePlants);
+        renderMarkers(visiblePlants);
+
+    } catch (err) {
+        console.error(err);
+    }
+
+    setTimeout(syncPlants, 20000);
+}
+
+
+syncPlants();
+
+// find location 
+map.locate({
+    setView: false,
+    enableHighAccuracy: true
+});
+
+map.on("locationfound", (e) => {
+    const userLocation = e.latlng;
+
+    if (userMarker) {
+        map.removeLayer(userMarker);
+    }
+
+    userMarker = L.circleMarker(userLocation, {
+        radius: 10,
+        color: "#2c2c2c",
+        fillColor: "#4d4d4d",
+        fillOpacity: 1
+    })
+    .addTo(map)
+    .bindPopup("📍 You are here")
+    .openPopup();
+
+});
+
+map.on("locationerror", (err) => {
+    console.warn("Location denied:", err.message);
+
+    alert("We couldn't access your location. Nearby features will not work.");
 });
