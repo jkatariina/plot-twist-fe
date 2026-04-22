@@ -1,27 +1,90 @@
 import { createPlant } from "../utils/addPlantApi.js";
 import { isLoggedIn } from "../state/authState.js";
+import { geocodeAddress } from "../utils/mapApi.js";
 
+// form
 const form = document.getElementById("addPlantForm");
 const submitBtn = form?.querySelector(".submit-btn");
-const authModal = document.getElementById("authModal");
-const closeAuthModalBtn = document.getElementById("closeAuthModal");
 
 const nameInput = document.getElementById("plant-name");
 const imageInput = document.getElementById("plant-image");
+const fileDisplay = document.querySelector(".file-display");
 const lightInput = document.getElementById("plant-light");
 const descriptionInput = document.getElementById("plant-description");
-const locationInput = document.getElementById("plant-location");
 
-let formMessage = document.getElementById("addPlantMessage");
+const authModal = document.getElementById("authModal");
+const closeAuthModalBtn = document.getElementById("closeAuthModal");
 
-if (!formMessage && form) {
-  formMessage = document.createElement("p");
-  formMessage.id = "addPlantMessage";
-  formMessage.classList.add("form-message");
-  formMessage.hidden = true;
-  submitBtn?.insertAdjacentElement("beforebegin", formMessage);
+// SAFE file change (hindrar crash)
+if (imageInput && fileDisplay) {
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+
+    fileDisplay.value = file ? file.name : "";
+  });
 }
 
+// message
+let formMessage = document.getElementById("addPlantMessage");
+
+// leaflet 
+const map = L.map("addPlantMap").setView([59.3293, 18.0686], 12);
+
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: "&copy; OpenStreetMap & CartoDB",
+}).addTo(map);
+
+// icon
+const plantIcon = L.icon({
+  iconUrl: "public/plant.svg",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
+
+let selectedCoordinates = null;
+let marker = null;
+
+// set plant location
+map.on("click", (e) => {
+  const { lat, lng } = e.latlng;
+
+  selectedCoordinates = { lat, lng };
+
+  if (marker) {
+    marker.setLatLng([lat, lng]);
+  } else {
+    marker = L.marker([lat, lng], { icon: plantIcon }).addTo(map);
+  }
+});
+
+
+const addressInput = document.getElementById("plant-address");
+const searchBtn = document.getElementById("searchAddressBtn");
+
+searchBtn?.addEventListener("click", async () => {
+  const address = addressInput?.value?.trim();
+  if (!address) return;
+
+  try {
+    const coords = await geocodeAddress(address);
+
+    selectedCoordinates = coords;
+
+    map.setView([coords.lat, coords.lng], 15);
+
+    if (marker) {
+      marker.setLatLng([coords.lat, coords.lng]);
+    } else {
+      marker = L.marker([coords.lat, coords.lng], { icon: plantIcon }).addTo(map);
+    }
+
+  } catch (err) {
+    setFormMessage("Could not find that address.");
+  }
+});
+
+
+// form message
 function setFormMessage(message) {
   if (!formMessage) return;
 
@@ -43,32 +106,19 @@ function closeAuthModal() {
   authModal?.classList.add("hidden");
 }
 
-function getCoordinates(location) {
-  const coordinatesByLocation = {
-    stockholm: { lat: 59.3293, lng: 18.0686 },
-    goteborg: { lat: 57.7089, lng: 11.9746 },
-    malmo: { lat: 55.605, lng: 13.0038 },
-    sundsvall: { lat: 62.3908, lng: 17.3069 },
-  };
-
-  return coordinatesByLocation[location] || coordinatesByLocation.stockholm;
-}
-
 closeAuthModalBtn?.addEventListener("click", closeAuthModal);
 
-authModal?.addEventListener("click", (event) => {
-  if (event.target === authModal) {
-    closeAuthModal();
-  }
+authModal?.addEventListener("click", (e) => {
+  if (e.target === authModal) closeAuthModal();
 });
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && authModal && !authModal.classList.contains("hidden")) {
-    closeAuthModal();
-  }
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeAuthModal();
 });
 
+// submit 
 form?.addEventListener("submit", async (event) => {
+
   event.preventDefault();
   setFormMessage("");
 
@@ -78,14 +128,14 @@ form?.addEventListener("submit", async (event) => {
   }
 
   const token = localStorage.getItem("accessToken");
-  const name = nameInput?.value.trim();
+
+  const name = nameInput?.value?.trim();
   const imageFile = imageInput?.files?.[0];
   const lightRequirements = Number(lightInput?.value);
-  const description = descriptionInput?.value.trim();
-  const location = locationInput?.value;
+  const description = descriptionInput?.value?.trim();
 
-  if (!name || !description || !location || !lightRequirements) {
-    setFormMessage("Please fill in plant name, location, light level and description.");
+  if (!name || !description || !lightRequirements) {
+    setFormMessage("Please fill in all required fields.");
     return;
   }
 
@@ -94,30 +144,27 @@ form?.addEventListener("submit", async (event) => {
     return;
   }
 
-  const coordinates = getCoordinates(location);
-  const randomizedLat = coordinates.lat + Math.random() * 0.001;
-  const randomizedLng = coordinates.lng + Math.random() * 0.001;
+  if (!selectedCoordinates) {
+    setFormMessage("Please select a location on the map.");
+    return;
+  }
 
   const plantData = new FormData();
   plantData.append("name", name);
   plantData.append("description", description);
   plantData.append("lightRequirements", String(lightRequirements));
-  plantData.append("coordinates", JSON.stringify({ lat: randomizedLat, lng: randomizedLng }));
+  plantData.append("coordinates", JSON.stringify(selectedCoordinates));
   plantData.append("image", imageFile);
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-  }
+  submitBtn.disabled = true;
 
   try {
     await createPlant(token, plantData);
     window.location.href = "/profile.html";
-  } catch (error) {
-    console.error("Error creating plant:", error);
-    setFormMessage(error.message || "Something went wrong. Please try again.");
+  } catch (err) {
+    console.error(err);
+    setFormMessage(err.message || "Something went wrong.");
   } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-    }
+    submitBtn.disabled = false;
   }
 });

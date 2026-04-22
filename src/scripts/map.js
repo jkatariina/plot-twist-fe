@@ -1,6 +1,7 @@
 import { getPlants } from "../utils/mapApi.js";
 import { createTrade, getTrades } from "../utils/tradesApi.js";
 
+
 // map init
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
