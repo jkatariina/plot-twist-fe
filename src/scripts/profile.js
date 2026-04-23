@@ -31,9 +31,7 @@ async function initProfile() {
     const plants = await getPlants(token);
     const trades = await getTrades(token);
 
-    const hiddenPlantIds = trades
-      .filter(t => t.status === "completed")
-      .map(t => t.product?._id);
+    const hiddenPlantIds = trades.filter((t) => t.status === "completed").map((t) => t.product?._id);
 
     const visiblePlants = plants.filter((p) => !hiddenPlantIds.includes(p._id));
 
@@ -254,12 +252,16 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
       ${
         trade.status === "pending"
           ? `
-          ${!isRequester ? `
+          ${
+            !isRequester
+              ? `
             <div class="meeting-setup">
               <label for="time-${trade._id}">Meeting time:</label>
               <input type="datetime-local" id="time-${trade._id}" class="meeting-time-input" />
             </div>
-          ` : ""}
+          `
+              : ""
+          }
           
           <div class="trade-actions">
             ${!isRequester ? `<button type="button" class="accept-trade-btn">Accept</button>` : ""}
@@ -274,42 +276,42 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
     </div>
   `;
 
-  const content = card.querySelector(".trade-content");
-  const infoBtn = card.querySelector(".trade-info-btn");
+    const content = card.querySelector(".trade-content");
+    const infoBtn = card.querySelector(".trade-info-btn");
 
-  function toggleTradeDetails(e) {
-    e.stopPropagation();
-    card.classList.toggle("open");
-  }
+    function toggleTradeDetails(e) {
+      e.stopPropagation();
+      card.classList.toggle("open");
+    }
 
-  content.addEventListener("click", toggleTradeDetails);
-  infoBtn.addEventListener("click", toggleTradeDetails);
+    content.addEventListener("click", toggleTradeDetails);
+    infoBtn.addEventListener("click", toggleTradeDetails);
 
     if (trade.status === "pending") {
       const acceptBtn = card.querySelector(".accept-trade-btn");
       const rejectBtn = card.querySelector(".reject-trade-btn");
 
-acceptBtn?.addEventListener("click", (e) => {
+      acceptBtn?.addEventListener("click", (e) => {
         e.stopPropagation();
-        
+
         let extraData = {};
-        
+
         if (!isRequester) {
-            const timeInput = card.querySelector(`#time-${trade._id}`);
-            const meetingTime = timeInput?.value;
-            
-            if (!meetingTime) {
-                showToast("Please select a meeting time!", "error");
-                return;
-            }
-            
-            const meetingPlace = trade.product?.coordinates;
-            
-            extraData = { 
-                // Omvandlar datumet till exakt det format Mongoose älskar!
-                meetingTime: new Date(meetingTime).toISOString(), 
-                meetingPlace: meetingPlace 
-            };
+          const timeInput = card.querySelector(`#time-${trade._id}`);
+          const meetingTime = timeInput?.value;
+
+          if (!meetingTime) {
+            showToast("Please select a meeting time!", "error");
+            return;
+          }
+
+          const meetingPlace = trade.product?.coordinates;
+
+          extraData = {
+            // Omvandlar datumet till exakt det format Mongoose älskar!
+            meetingTime: new Date(meetingTime).toISOString(),
+            meetingPlace: meetingPlace,
+          };
         }
 
         // Titta i din konsol när du klickar! Är allt med?
@@ -324,22 +326,38 @@ acceptBtn?.addEventListener("click", (e) => {
       });
     }
 
-  container.appendChild(card);
-});
-
+    container.appendChild(card);
+  });
 }
 
 // UPPDATERAD FUNKTION! Tar nu emot extraData
 async function handleTradeStatusUpdate(tradeId, status, extraData = {}) {
-  try {
-    await updateTradeStatus(tradeId, status, extraData);
-    await initProfile();
+  const isCancelAction = status === "cancelled";
+  const statusAttempts = isCancelAction ? ["cancelled", "canceled", "rejected"] : [status];
 
-    const statusLabel = status === "cancelled" ? "canceled" : status;
-    showToast(`Trade ${statusLabel} successfully!`, "success");
-  } catch (err) {
-    showToast(err.message || "Failed to update trade", "error");
+  let lastError = null;
+
+  for (const nextStatus of statusAttempts) {
+    try {
+      await updateTradeStatus(tradeId, nextStatus, extraData);
+      await initProfile();
+
+      const statusLabel = isCancelAction ? "canceled" : nextStatus;
+      showToast(`Trade ${statusLabel} successfully!`, "success");
+      return;
+    } catch (err) {
+      lastError = err;
+
+      const message = (err?.message || "").toLowerCase();
+      const isStatusValidationError = message.includes("invalid status") || message.includes("status must be");
+
+      if (!isCancelAction || !isStatusValidationError) {
+        break;
+      }
+    }
   }
+
+  showToast(lastError?.message || "Failed to update trade", "error");
 }
 
 function hideLoader() {
