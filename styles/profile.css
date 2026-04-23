@@ -148,23 +148,16 @@
   z-index: 1;
 }
 
-.plant-card:hover {
-  transform: translateY(-3px);
-}
-
 .plant-image {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 8px;
   object-fit: cover;
-  transition: all 0.3s ease;
 }
 
-.plant-card:hover .plant-image,
-.plant-card.open .plant-image {
-  width: 100%;
-  height: 200px;
-  border-radius: 12px;
+.plant-card:hover > .plant-image,
+.plant-card.open > .plant-image {
+  display: none;
 }
 
 .plant-content {
@@ -180,6 +173,14 @@
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid #dceccf;
+}
+
+.plant-preview-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
 }
 
 
@@ -217,7 +218,6 @@
 }
 
 
-.plant-card:hover,
 .activity-card:hover,
 .trade-card:hover {
   transform: translateY(-3px);

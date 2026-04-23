@@ -116,6 +116,11 @@ function renderPlants(plants) {
         <p>${plant.description || "No description"}</p>
 
         <div class="plant-details">
+          ${
+            cleanImage(plant.image)
+              ? `<img class="plant-preview-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+              : ""
+          }
           <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
           <p>
             <strong>Created at:</strong>
