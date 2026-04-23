@@ -33,7 +33,7 @@ async function initProfile() {
     const trades = await getTrades(token);
 
     const hiddenPlantIds = trades
-      .filter(t => t.status === "accepted" || t.status === "completed")
+.filter(t => t.status === "completed")
       .map(t => t.product?._id);
 
     const visiblePlants = plants.filter(p =>
@@ -118,8 +118,6 @@ function renderPlants(plants) {
           : ""
       }
 
-      <button class="delete-plant-btn">X</button>
-
       <div class="plant-content">
         <strong>${plant.name || "Unnamed plant"}</strong>
         <p>${plant.description || "No description"}</p>
@@ -131,6 +129,8 @@ function renderPlants(plants) {
             ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
           </p>
         </div>
+
+        <button class="delete-plant-btn">Delete</button>
       </div>
     `;
 
@@ -238,6 +238,8 @@ trades.forEach(trade => {
         <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
       </p>
 
+      <button type="button" class="trade-info-btn">More info</button>
+
       <div class="trade-details">
         <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
         <p>
@@ -261,12 +263,15 @@ trades.forEach(trade => {
   `;
 
   const content = card.querySelector(".trade-content");
+  const infoBtn = card.querySelector(".trade-info-btn");
 
-  content.addEventListener("click", (e) => {
+  function toggleTradeDetails(e) {
     e.stopPropagation();
+    card.classList.toggle("open");
+  }
 
-  card.classList.toggle("open");
-  });
+  content.addEventListener("click", toggleTradeDetails);
+  infoBtn.addEventListener("click", toggleTradeDetails);
 
   if (trade.status === "pending") {
     const acceptBtn = card.querySelector(".accept-trade-btn");
@@ -285,6 +290,7 @@ trades.forEach(trade => {
 
   container.appendChild(card);
 });
+
 }
 
 async function handleTradeStatusUpdate(tradeId, status) {
@@ -446,4 +452,3 @@ profileImageInput?.addEventListener("change", async () => {
     }
   }
 });
-
