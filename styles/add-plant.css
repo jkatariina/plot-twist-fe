@@ -7,23 +7,23 @@ body, html {
 .add-plant-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 4rem 2rem 5rem;
+  padding: 2rem 2rem 5rem;
 }
 
 /* HEADER */
-.add-plant-header {
+.add-plant-text {
   text-align: center;
   margin-bottom: 2.75rem;
 }
 
-.add-plant-header h1 {
+.add-plant-text h1 {
   font-size: clamp(2rem, 3vw, 2.6rem);
   margin-bottom: 0.65rem;
   color: #1e3d2f;
   line-height: 1.1;
 }
 
-.add-plant-header p {
+.add-plant-text p {
   color: #666;
   font-size: 1rem;
   max-width: 34rem;
@@ -223,4 +223,64 @@ body, html {
   cursor: pointer;
   font-size: 0.95rem;
   padding: 0.35rem 0.5rem;
+}
+
+.add-plant-map {
+  height: 300px;
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: none;
+  border: 1px solid #ddd;
+}
+
+
+.map-hint {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0px;  
+}
+
+.file-display {
+  width: 100%;
+  padding: 0.95rem 6rem 0.95rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #d7ddd8;
+  background: #fcfcfb;
+  font-size: 0.95rem;
+}
+
+.file-input-wrapper, .input-with-button {
+  position: relative;
+  width: 100%;
+}
+
+.input-with-button input {
+  width: 100%;
+  padding-right: 100px;
+}
+
+.file-button, .input-with-button button {
+  position: absolute;
+  text-align: center;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.6rem 0.8rem;
+  background: var(--color-primary-hover);
+  color: white !important;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(30, 61, 47, 0.18);
+  transition: 0.2s ease;
+  width: 120px; 
+  height: 40px;
+}
+
+.file-button:hover, .input-with-button button:hover {
+  transform: translateY(-50%) scale(1.03);
+  box-shadow: 0 12px 22px rgba(30, 61, 47, 0.22);
 }

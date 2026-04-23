@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <title>Plot Twist</title>
+        <link rel="stylesheet" href="/styles/style.css"/>
+        <link rel="stylesheet" href="/styles/terms-and-policy.css"/>
+    </head>
+    <body>
+        <!-- HEADER -->
+        <header class="site-header">
+        <nav class="nav">
+            <a href="index.html" class="logo">Plot Twist</a>
+            <input type="checkbox" id="menu-toggle"/>
+            <label for="menu-toggle" class="menu-icon">
+            <i class="fa-solid fa-bars hamburger"></i>
+            <i class="fa-solid fa-xmark close"></i>
+            </label>
+            <ul class="nav-links">
+                <li><a href="/add-plant.html" class="add-plant">Add plant</a></li>
+                <li id="loginItem"><a href="/login.html">Log in</a></li>
+                <li><a href="/map.html">Map</a></li>
+                <!-- <li class="account-item" id="accountItem"><a href="/register.html">Create new acount</a></li> -->
+                <li class="profile-item" id="profileItem"><a href="/profile.html">Profile</a></li>
+                <li class="logout-item" id="logoutItem"><a href="/index.html" id="logoutBtn">Log out</a>
+            </ul>
+        </nav>
+        </header>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="legal-page">
+                <div class="legal-header">
+                    <h1>Terms and Conditions</h1>
+                    <p>Last updated: 25 February 2026</p>
+                </div>
+                <div class="legal-card">
+                    <h2>1. About Plot Twist</h2>
+                    <p>
+                    Plot Twist is a conceptual platform where neighbors can share and exchange plants locally.
+                    It is a non-commercial project. The platform does not handle payments, sales, or deliveries.
+                    All exchanges happen directly between users.
+                    </p>
+
+                    <h2>2. How the platform works</h2>
+                    <ul>
+                    <li>Users can post plants they want to share</li>
+                    <li>Users can browse plants from others</li>
+                    <li>Users can connect and arrange exchanges</li>
+                    </ul>
+
+                    <p>We do not participate in or manage any exchanges.</p>
+
+                    <h2>3. Eligibility</h2>
+                    <ul>
+                    <li>You must be at least 18 years old</li>
+                    <li>You must use the platform for personal, non-commercial purposes</li>
+                    </ul>
+
+                    <h2>4. User responsibility</h2>
+                    <p>You agree to:</p>
+                    <ul>
+                    <li>Be honest in your listings</li>
+                    <li>Only share plants you own</li>
+                    <li>Be respectful to other users</li>
+                    </ul>
+
+                    <p>You must not:</p>
+                    <ul>
+                    <li>Use the platform for selling</li>
+                    <li>Post illegal or harmful content</li>
+                    <li>Harass other users</li>
+                    </ul>
+
+                    <h2>5. Exchanges</h2>
+                    <p>
+                    All exchanges are arranged directly between users. We are not responsible for meetups or agreements.
+                    Use common sense and meet in safe places.
+                    </p>
+
+                    <h2>6. Content</h2>
+                    <p>
+                    You are responsible for your content. By posting, you allow it to be shown on the platform.
+                    </p>
+
+                    <h2>7. Safety</h2>
+                    <p>
+                    We may remove content or users that violate these rules.
+                    </p>
+
+                    <h2>8. Changes</h2>
+                    <p>
+                    These Terms may be updated at any time.
+                    </p>
+
+                    <h2>9. Disclaimer</h2>
+                    <p>
+                    This is a non-commercial demo project with no guarantees.
+                    </p>
+                </div>
+            </div>
+        </main>
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/map.html">Map</a>
+                    <a href="/add-plant.html">Add plant</a>
+                    <a href="/profile.html">Profile</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- PAGE-SPECIFIC JAVASCRIPT -->
+        <script type="module" src="./src/scripts/auth.js"></script>
+        <script type="module" src="./src/scripts/navbar.js"></script>
+    </body>
+</html>

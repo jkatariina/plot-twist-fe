@@ -6,23 +6,24 @@ export async function createPlant(token, plantData) {
   const response = await fetch(`${baseUrl}/products`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(plantData),
+    body: plantData,
   });
 
   const text = await response.text();
+  const contentType = response.headers.get("content-type") || "";
 
   let data;
-  try {
+  if (contentType.includes("application/json")) {
     data = JSON.parse(text);
-  } catch {
+  } else {
     data = { message: text };
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to create plant");
+    const isHtml = typeof data.message === "string" && data.message.includes("<html");
+    throw new Error(isHtml ? `Server error (${response.status})` : data.message || "Failed to create plant");
   }
 
   return data;

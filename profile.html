@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Profile - Plot Twist</title>
+    <link rel="stylesheet" href="/styles/style.css"/>
+    <link rel="stylesheet" href="/styles/index.css"/>
+    <link rel="stylesheet" href="/styles/profile.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
-    <link rel="stylesheet" href="/styles/style.css" />
-    <link rel="stylesheet" href="/styles/index.css" />
-    <link rel="stylesheet" href="/styles/profile.css" />
   </head>
   <body>
     <!-- HEADER -->
@@ -41,10 +42,13 @@
       <div class="profile-left">
         <div class="avatar-wrapper">
           <div class="avatar-overlay"></div>
-          <img id="userImage" class="avatar" alt="Profile picture"/>
-          <button id="editImageBtn" class="edit-btn-avatar" aria-label="Edit profile picture">
-            <i class="fa-solid fa-pen"></i>
-          </button>
+          <div class="plant-media">
+            <img id="userImage" class="avatar" alt="Profile picture"/>
+            <button id="editImageBtn" class="edit-btn-avatar" aria-label="Edit profile picture">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <input type="file" id="profileImageInput" accept="image/jpeg, image/png, image/jpg" hidden />
+          </div>
         </div>
         <div class="profile-meta">
           <div class="profile-name">
@@ -84,7 +88,19 @@
         </section>
       </div>
     </main>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="/map.html">Map</a>
+          <a href="/add-plant.html">Add plant</a>
+          <a href="/profile.html">Profile</a>
+        </div>
+      </div>
+    </footer>
     <script type="module" src="/src/scripts/profile.js"></script>
     <script type="module" src="/src/scripts/navbar.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
   </body>
 </html>

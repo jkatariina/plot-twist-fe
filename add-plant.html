@@ -3,9 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Plant - Plot Twist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Plot Twist</title>
     <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="/styles/add-plant.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   </head>
   <body>
     <header class="site-header">
@@ -27,29 +30,33 @@
       </nav>
     </header>
 
+
     <main class="add-plant-page">
-      <section class="add-plant-header">
+      <section class="add-plant-text">
         <h1>Add a plant</h1>
         <p>Share your plant with the community and start swapping.</p>
       </section>
-
       <section class="add-plant-card">
         <form id="addPlantForm" class="add-plant-form">
+
           <label for="plant-name">Plant name</label>
           <input type="text" id="plant-name" name="plant-name" placeholder="Monstera Deliciosa" />
 
-          <label for="plant-location">Location</label>
-          <select id="plant-location" name="plant-location">
-            <option value="stockholm">Stockholm</option>
-            <option value="goteborg">Göteborg</option>
-            <option value="malmo">Malmö</option>
-            <option value="sundsvall">Sundsvall</option>
+          <label>Pick plant location</label>
+          <div id="addPlantMap" class="add-plant-map"></div>
+          <p class="map-hint">Click on the map or search for an address to place your plant.  </p>
 
-          </select>
+          <label for="plant-address">Search address</label>
+          <div class="input-with-button">
+            <input type="text" id="plant-address" placeholder="Sveavägen 10, Stockholm"/>
+            <button type="button" id="searchAddressBtn">Search</button>
+          </div>
 
-          <label for="plant-image">Image URL</label>
-          <input type="text" id="plant-image" name="plant-image" placeholder="Paste image link here" />
-
+          <div class="file-input-wrapper">
+            <input type="text" class="file-display" placeholder="No file selected" readonly />
+            <input type="file" id="plant-image" accept="image/jpeg, image/png" hidden/>
+            <label for="plant-image" class="file-button">Choose file</label>
+          </div>
           <label for="plant-light">Light level</label>
           <select id="plant-light" name="plant-light">
             <option value="1">1 - Low light</option>
@@ -64,7 +71,7 @@
             rows="5"
             placeholder="Tell others a bit about your plant..."
           ></textarea>
-
+          <p id="addPlantMessage" class="form-message"></p>
           <button type="submit" class="submit-btn">Add plant</button>
         </form>
       </section>
@@ -83,7 +90,20 @@
       </div>
     </div>
 
-    <script type="module" src="/src/scripts/add-plant.js"></script>
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p>&copy; 2026 Plot Twist. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="/map.html">Map</a>
+          <a href="/add-plant.html">Add plant</a>
+          <a href="/profile.html">Profile</a>
+        </div>
+      </div>
+    </footer>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="./src/scripts/add-plant.js"></script>
     <script type="module" src="./src/scripts/navbar.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
   </body>
 </html>
