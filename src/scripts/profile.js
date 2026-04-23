@@ -1,5 +1,5 @@
-import { getProfile, updateProfile, getPlants } from "../utils/profileApi.js";
-import { getTrades } from "../utils/tradesApi.js";
+import { getProfile, updateProfile, getPlants, deleteProduct } from "../utils/profileApi.js";
+import { getTrades, updateTradeStatus } from "../utils/tradesApi.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -7,6 +7,9 @@ const imageEl = document.getElementById("userImage");
 const aboutEl = document.getElementById("profileAbout");
 const plantCountBadge = document.getElementById("plantCountBadge");
 const userStatusBadge = document.getElementById("userStatusBadge");
+const editImageBtn = document.getElementById("editImageBtn");
+const profileImageInput = document.getElementById("profileImageInput");
+const editAboutBtn = document.getElementById("editAboutBtn");
 
 const plantsContainer = document.getElementById("plantsContainer");
 const activeTradesContainer = document.getElementById("activeTradesContainer");
@@ -29,15 +32,22 @@ async function initProfile() {
     const plants = await getPlants(token);
     const trades = await getTrades(token);
 
-    renderProfile(user, plants);
+    const hiddenPlantIds = trades
+      .filter(t => t.status === "accepted" || t.status === "completed")
+      .map(t => t.product?._id);
+
+    const visiblePlants = plants.filter(p =>
+      !hiddenPlantIds.includes(p._id)
+    );
+
+renderProfile(user, visiblePlants);
     renderTrades(trades);
 
     hideLoader();
 
   } catch (err) {
-    console.error("Failed to load profile:", err);
-
-    hideLoader();
+    console.error(err);
+    alert(err.message);
   }
 }
 
@@ -88,18 +98,8 @@ function cleanImage(url) {
   return url;
 }
 
-// plants
-function getPlantName(productId, plants) {
-  const plant = plants.find(p => p._id === productId);
-  return plant ? plant.name : "Unknown plant";
-}
-
-function getUserName(userId, users) {
-  const user = users.find(u => u._id === userId);
-  return user ? user.name : "Unknown user";
-}
-
-  function renderPlants(plants) {
+// active plant listings
+function renderPlants(plants) {
   plantsContainer.innerHTML = "";
 
   if (!plants.length) {
@@ -112,29 +112,63 @@ function getUserName(userId, users) {
     card.classList.add("plant-card");
 
     card.innerHTML = `
-        ${cleanImage(plant.image)
-          ? `<img src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+      ${
+        cleanImage(plant.image)
+          ? `<img class="plant-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
           : ""
-        }
+      }
 
-      <div>
+      <button class="delete-plant-btn">X</button>
+
+      <div class="plant-content">
         <strong>${plant.name || "Unnamed plant"}</strong>
-
         <p>${plant.description || "No description"}</p>
 
-        <p>
-          Light requirements: ${plant.lightRequirements ?? "N/A"}
-        </p>
-
-        <small>
-          ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
-        </small>
+        <div class="plant-details">
+          <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
+          <p>
+            <strong>Created at:</strong>
+            ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
+          </p>
+        </div>
       </div>
     `;
-    
+
+//  delete plant
+    const deleteBtn = card.querySelector(".delete-plant-btn");
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        const confirmed = confirm("Are you sure you want to delete this plant?");
+        if (!confirmed) return;
+
+        try {
+          await deleteProduct(plant._id);
+
+          card.remove();
+
+          const currentCount =
+            parseInt(plantCountBadge.textContent) || plants.length;
+
+          plantCountBadge.textContent = `${currentCount - 1} plants`;
+
+        } 
+        catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      });
+    }
+
+    // toggle card
+    card.addEventListener("click", () => {
+      card.classList.toggle("open");
+    });
+
     plantsContainer.appendChild(card);
   });
-  
 }
 
 // helpers
@@ -186,36 +220,83 @@ function renderTradeList(trades, container, emptyText) {
     return;
   }
 
-  trades.forEach(trade => {
-    const card = document.createElement("div");
-    card.classList.add("trade-card");
+trades.forEach(trade => {
+  const card = document.createElement("div");
+  card.classList.add("trade-card");
 
-    card.innerHTML = `
-      <div>
+  card.innerHTML = `
+    <div class="trade-content">
 
-        <small>
-          ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
-        </small>
+      <small>
+        ${trade.createdAt ? new Date(trade.createdAt).toLocaleDateString() : ""}
+      </small>
 
-        <span class="badge ${getStatusClass(trade.status)}">
-          ${formatStatus(trade.status)}
-        </span>
+      <span class="badge ${getStatusClass(trade.status)}">
+        ${formatStatus(trade.status)}
+      </span>
 
+      <p>
+        <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
+        <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
+      </p>
+
+      <div class="trade-details">
+        <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
         <p>
-          <strong>From:</strong> ${trade.requester?.name || "Unknown"}<br/>
-          <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
-        </p>
-
-        <p>
-          <strong>Plant:</strong> ${trade.product?.name || "Unknown"}
+          <strong>${trade.product?.name || "Unknown"}</strong> <br/>
+          ${trade.product?.description || "Unknown"}<br/>
+          <strong>Light requirements: </strong>${trade.product?.lightRequirements || ""}
         </p>
       </div>
-    `;
 
-    container.appendChild(card);
+      ${trade.status === "pending"
+        ? `
+          <div class="trade-actions">
+            <button type="button" class="accept-trade-btn">Accept</button>
+            <button type="button" class="reject-trade-btn">Reject</button>
+          </div>
+        `
+        : ""
+      }
+
+    </div>
+  `;
+
+  const content = card.querySelector(".trade-content");
+
+  content.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+  card.classList.toggle("open");
   });
+
+  if (trade.status === "pending") {
+    const acceptBtn = card.querySelector(".accept-trade-btn");
+    const rejectBtn = card.querySelector(".reject-trade-btn");
+
+    acceptBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "accepted");
+    });
+
+    rejectBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTradeStatusUpdate(trade._id, "rejected");
+    });
+  }
+
+  container.appendChild(card);
+});
 }
 
+async function handleTradeStatusUpdate(tradeId, status) {
+  try {
+    await updateTradeStatus(tradeId, status);
+    await initProfile();
+  } catch (err) {
+    alert(err.message);
+  }
+}
 
 function hideLoader() {
   if (!loader) return;
@@ -226,6 +307,7 @@ function hideLoader() {
     loader.remove();
   }, 500);
 }
+
 //edit name
 let isEditingName = false;
 const editNameBtn = document.getElementById("editNameBtn");
@@ -256,6 +338,7 @@ async function saveName() {
     nameEl.textContent = res.name || "Unknown";
   } catch (err) {
     console.error(err);
+    alert(err.message);
   }
 
   isEditingName = false;
@@ -317,6 +400,7 @@ editAboutBtn.addEventListener("click", async () => {
 
   } catch (err) {
     console.error(err);
+    alert(err.message);
   }
 
   editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
@@ -325,4 +409,43 @@ editAboutBtn.addEventListener("click", async () => {
 
 
 //edit profile image
+editImageBtn?.addEventListener("click", () => {
+  profileImageInput?.click();
+});
+
+profileImageInput?.addEventListener("change", async () => {
+  const selectedFile = profileImageInput.files?.[0];
+
+  if (!selectedFile) {
+    return;
+  }
+
+  const profileData = new FormData();
+  profileData.append("profileImage", selectedFile);
+
+  if (editImageBtn) {
+    editImageBtn.disabled = true;
+  }
+
+  try {
+    const updatedUser = await updateProfile(token, profileData);
+    const nextImage = updatedUser?.profileImage || updatedUser?.user?.profileImage;
+
+    if (nextImage) {
+      imageEl.src = nextImage;
+    }
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+
+  } finally {
+    if (profileImageInput) {
+      profileImageInput.value = "";
+    }
+
+    if (editImageBtn) {
+      editImageBtn.disabled = false;
+    }
+  }
+});
 

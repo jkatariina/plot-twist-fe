@@ -14,13 +14,19 @@ export async function getProfile() {
 
 //update profile
 export async function updateProfile(token, data) {
+    const isFormData = data instanceof FormData;
+
     const res = await apiFetch(`${getBaseUrl()}/me`, {
         method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(data),
+        headers: isFormData
+            ? {
+                "Authorization": `Bearer ${token}`
+            }
+            : {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        body: isFormData ? data : JSON.stringify(data),
     });
 
     if (!res.ok) {
@@ -30,7 +36,7 @@ export async function updateProfile(token, data) {
     return res.json();
 }
 
-//plants
+// get plants
 export async function getPlants() {
 
     const res = await apiFetch(`${getBaseUrl()}/me/plants`);
@@ -40,4 +46,16 @@ export async function getPlants() {
     }
 
     return res.json();
+}
+
+export async function deleteProduct(id) {
+    const res = await apiFetch(`${getBaseUrl()}/products/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to delete product: ${res.status}`);
+    }
+
+    return true;
 }

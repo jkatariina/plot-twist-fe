@@ -32,13 +32,26 @@
         </nav>
         </header>
 
-        <!-- MAIN CONTENT -->
         <main class="main-content">
-            <section class="map-section">
-                <label class="distance-toggle">
-                    <input type="checkbox" id="distanceToggle"/>Show nearby</label>
+            <div id="pageLoader" class="page-loader">
+                <div>
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+            </div>
+            <section class="map-layout">
 
-                <div class="map" id="map"></div>
+                <div class="map-wrapper">
+                    <!-- <label class="distance-toggle">
+                        <input type="checkbox" id="distanceToggle"/>
+                        Show nearby
+                    </label> -->
+
+                    <div id="map"></div>
+                </div>
+
+                <!-- RIGHT SIDEBAR (LISTA) -->
+                <div class="sidebar" id="plantList"></div>
+
             </section>
         </main>
 
@@ -47,6 +60,9 @@
         <div class="footer-content">
             <p>&copy; 2026 Plot Twist. All rights reserved.</p>
             <div class="footer-links">
+                <a href="/map.html">Map</a>
+                <a href="/add-plant.html">Add plant</a>
+                <a href="/profile.html">Profile</a>
             </div>
         </div>
         </footer>

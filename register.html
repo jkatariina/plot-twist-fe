@@ -29,27 +29,27 @@
             </ul>
         </nav>
         </header>
-
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <section class="auth-container register">
                 <!-- SIGN UP FORM -->
                 <form class="register-form">
                     <h2>Sign up into Plot Twist</h2>
-                    <input id="registerFullnameInput" type="text" placeholder="Full name" autocomplete="Name">
-                    <input id="registerEmailInput" type="text" placeholder="Email" autocomplete="email">
-                    <input id="registerPasswordInput" type="password" placeholder="Password" autocomplete="password">
+                    <input id="registerFullnameInput" type="text" placeholder="Full name" autocomplete="Name" required>
+                    <input id="registerEmailInput" type="email" placeholder="Email" autocomplete="email" required>
+                    <input id="registerPasswordInput" type="password" placeholder="Password" autocomplete="password" required>
                         <div class="terms">
                         <input type="checkbox" id="registerTerms" name="terms" required>
                         <label for="terms">
                             By registering, I accept
-                            <a href="/terms" target="_blank">Plot Twist's Terms and Conditions</a>
+                            <a href="/terms.html" target="_blank">Plot Twist's Terms and Conditions</a>
                             and have read the
-                            <a href="/privacy" target="_blank" id="privacy">Privacy Policy</a>,
+                            <a href="/privacy.html" target="_blank" id="privacy">Privacy Policy</a>,
                             and confirm I am at least 18 years old.
                         </label>
                         </div>                   
                     <button id="submitBtn" class="submit-btn">Submit</button>
+                    <div id="successNotification"></div>
                 </form>
             </section>
         </main>
@@ -59,6 +59,9 @@
             <div class="footer-content">
                 <p>&copy; 2026 Plot Twist. All rights reserved.</p>
                 <div class="footer-links">
+                    <a href="/map.html">Map</a>
+                    <a href="/add-plant.html">Add plant</a>
+                    <a href="/profile.html">Profile</a>
                 </div>
             </div>
         </footer>
