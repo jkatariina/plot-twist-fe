@@ -1,5 +1,6 @@
 import { getPlants } from "../utils/mapApi.js";
 import { createTrade, getTrades } from "../utils/tradesApi.js";
+import { showToast } from "../utils/toastify.js";
 
 const loader = document.getElementById("pageLoader");
 
@@ -54,9 +55,9 @@ function renderSidebar(plants) {
 async function sendSwapRequest(productId) {
     try {
         await createTrade(productId);
-        alert("Trade request sent!");
+        showToast("Trade request sent!");
     } catch (err) {
-        alert(err.message);
+        showToast(err.message);
     }
 }
 
@@ -219,5 +220,5 @@ map.on("locationfound", (e) => {
 map.on("locationerror", (err) => {
     console.warn("Location denied:", err.message);
 
-    alert("We couldn't access your location. Nearby features will not work.");
+    showToast("We couldn't access your location. Nearby features will not work.");
 });
