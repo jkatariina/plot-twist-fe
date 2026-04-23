@@ -29,7 +29,6 @@ async function updateProfileBadge() {
         const myUserId = getMyUserId()
 
         const trades = await getTrades();
-        console.log(trades)
 
         const pendingCount = trades.filter(t => {
             const receiverId = t.receiver._id || t.receiver; 

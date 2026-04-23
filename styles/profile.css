@@ -148,6 +148,12 @@
   z-index: 1;
 }
 
+.plant-card {
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+}
+
 .plant-image {
   width: 56px;
   height: 56px;
@@ -155,10 +161,10 @@
   object-fit: cover;
 }
 
-.plant-card:hover > .plant-image,
-.plant-card.open > .plant-image {
+.plant-card.open .plant-image {
   display: none;
 }
+
 
 .plant-content {
   flex: 1;
@@ -183,8 +189,6 @@
   margin-bottom: 0.7rem;
 }
 
-
-.plant-card:hover .plant-details,
 .plant-card.open .plant-details {
   max-height: 500px;
   opacity: 1;
@@ -230,6 +234,20 @@
   font-size: 0.85rem;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .plant-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .plant-card:hover .plant-details {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .plant-card:hover .plant-image {
+    display: none;
+  }
+}
 /* ABOUT BOX */
 .about {
   display: flex;
@@ -414,14 +432,14 @@
 .trade-info-btn {
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  right: 0.5rem;
   border: 1px solid #dceccf;
   border-radius: 8px;
   background: white;
   color: #1e3d2f;
-  padding: 0.45rem 0.75rem;
+  padding: 0.1rem 0.3rem;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -433,6 +451,14 @@
 .trade-info-btn:focus-visible {
   outline: 2px solid #8fb89b;
   outline-offset: 2px;
+}
+
+.trade-info-btn i {
+  transition: transform 0.3s ease;
+}
+
+.trade-card.open .trade-info-btn i {
+  transform: rotate(180deg);
 }
 
 .trade-actions {
@@ -500,10 +526,10 @@
   pointer-events: auto;
 }
 
-.plant-card:hover .delete-plant-btn {
+.delete-plant-btn {
   opacity: 1;
   pointer-events: auto;
-}
+} 
 
 .delete-plant-btn:hover {
   background: #f8eeee;
