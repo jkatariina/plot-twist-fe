@@ -1,48 +1,24 @@
 import { login, register } from "../utils/authApi.js";
+import { showToast } from "../utils/toastify.js"; // 1. Importera Toastify!
 
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const loginBtn = document.getElementById("loginBtn");
 
-let errorMessage = document.getElementById("errorMessage");
-
-//login
-
-if (!errorMessage) {
-    errorMessage = document.createElement("p");
-    errorMessage.id = "errorMessage";
-    errorMessage.classList.add("error-message");
-    errorMessage.style.display = "none";
-
-    loginBtn && loginBtn.insertAdjacentElement("afterEnd", errorMessage);
-}
-
-function setErrorMessage(message) {
-    if (!message) {
-        errorMessage.textContent = "";
-        errorMessage.style.display = "none";
-        return;
-    }
-
-    errorMessage.textContent = message;
-    errorMessage.style.display = "block";
-}
-
+// --- LOGIN ---
 loginBtn && loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-
-    setErrorMessage("");
 
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
     if (!email || !password) {
-        setErrorMessage("Please fill in both email and password");
+        showToast("Please fill in both email and password", "error");
         return;
     }
 
     if (!emailInput.checkValidity()) {
-        setErrorMessage("Please enter a valid email");
+        showToast("Please enter a valid email", "error");
         return;
     }
 
@@ -54,50 +30,28 @@ loginBtn && loginBtn.addEventListener("click", async (e) => {
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
 
-        window.location.href = "/map.html";
+        showToast("Login successful!", "success");
+        setTimeout(() => {
+            window.location.href = "/map.html";
+        }, 1000);
 
     } catch (error) {
-        setErrorMessage(error.message || "Login failed");
+        showToast(error.message || "Wrong email or password", "error");
     } finally {
         loginBtn.disabled = false;
     }
 });
 
-//register
 
+// --- REGISTER ---
 const registerFullnameInput = document.getElementById("registerFullnameInput");
 const registerEmailInput = document.getElementById("registerEmailInput");
 const registerPasswordInput = document.getElementById("registerPasswordInput");
 const termsCheckbox = document.getElementById("registerTerms");
 const submitBtn = document.getElementById("submitBtn");
 
-let errorMessageRegister = document.getElementById("errorMessageRegister");
-
-if (!errorMessageRegister) {
-    errorMessageRegister = document.createElement("p");
-    errorMessageRegister.id = "errorMessageRegister";
-    errorMessageRegister.classList.add("errorMessageRegister");
-    errorMessageRegister.style.display = "none";
-    submitBtn?.insertAdjacentElement("beforebegin", errorMessageRegister);
-}
-
-function showError(element, message) {
-    if (!element) return;
-
-    if (!message) {
-        element.textContent = "";
-        element.style.display = "none";
-        return;
-    }
-
-    element.textContent = message;
-    element.style.display = "block";
-}
-
 submitBtn?.addEventListener("click", async (e) => {
     e.preventDefault();
-
-    showError(errorMessageRegister, "");
 
     const email = registerEmailInput?.value.trim();
     const password = registerPasswordInput?.value.trim();
@@ -106,49 +60,40 @@ submitBtn?.addEventListener("click", async (e) => {
     const termsAccepted = termsCheckbox?.checked;
 
     if (!name || !email || !password) {
-        showError(errorMessageRegister, "Please fill in all fields");
+        showToast("Please fill in all fields", "error");
         return;
     }
 
     if (!registerEmailInput.checkValidity()) {
-        showError(errorMessageRegister, "Please enter a valid email");
+        showToast("Please enter a valid email", "error");
         return;
     }
 
     if (!strongPassword.test(password)) {
-        showError(
-            errorMessageRegister,
-            "Password must be 8+ characters and include a number"
-        );
+        showToast("Password must be 8+ characters and include a number", "error");
         return;
     }
 
     if (!termsAccepted) {
-        showError(errorMessageRegister, "You must accept the terms");
+        showToast("You must accept the terms", "error");
         return;
     }
 
     submitBtn.disabled = true;
 
-
-const successNotification = document.getElementById("successNotification");
-
-if (!successNotification) {
-    console.warn("Success notification element not found");
-}
-
     try {
         await register(name, email, password);
 
-        alert("Registration successful!");
+        showToast("Registration successful! Redirecting...", "success");
 
-        window.location.href = "/login.html";
+        setTimeout(() => {
+            window.location.href = "/login.html";
+        }, 1500);
 
     } catch (error) {
         console.error("REGISTER ERROR:", error);
-        showError(errorMessageRegister, error.message || "Something went wrong");
+        showToast(error.message || "Something went wrong", "error");
+    } finally {
+        submitBtn.disabled = false;
     }
-
-    submitBtn.disabled = false;
-    }
-);
+});

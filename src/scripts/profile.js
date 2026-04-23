@@ -1,5 +1,6 @@
 import { getProfile, updateProfile, getPlants, deleteProduct } from "../utils/profileApi.js";
 import { getTrades, updateTradeStatus } from "../utils/tradesApi.js";
+import { showToast } from "../utils/toastify.js";
 
 const nameEl = document.getElementById("profileName");
 const emailEl = document.getElementById("profileEmail");
@@ -40,14 +41,14 @@ async function initProfile() {
       !hiddenPlantIds.includes(p._id)
     );
 
-renderProfile(user, visiblePlants);
+    renderProfile(user, visiblePlants);
     renderTrades(trades);
 
     hideLoader();
 
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    showToast(err.message || "Failed to load profile", "error");
   }
 }
 
@@ -153,11 +154,13 @@ function renderPlants(plants) {
             parseInt(plantCountBadge.textContent) || plants.length;
 
           plantCountBadge.textContent = `${currentCount - 1} plants`;
+          
+          showToast("Plant deleted successfully!", "success");
 
         } 
         catch (err) {
           console.error(err);
-          alert(err.message);
+          showToast(err.message || "Failed to delete plant", "error");
         }
       });
     }
@@ -293,8 +296,10 @@ async function handleTradeStatusUpdate(tradeId, status) {
   try {
     await updateTradeStatus(tradeId, status);
     await initProfile();
+    
+    showToast(`Trade ${status} successfully!`, "success");
   } catch (err) {
-    alert(err.message);
+    showToast(err.message || "Failed to update trade", "error");
   }
 }
 
@@ -336,9 +341,10 @@ async function saveName() {
   try {
     const res = await updateProfile(token, { name: newName });
     nameEl.textContent = res.name || "Unknown";
+    showToast("Name updated successfully!", "success");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    showToast(err.message || "Failed to update name", "error");
   }
 
   isEditingName = false;
@@ -397,10 +403,12 @@ editAboutBtn.addEventListener("click", async () => {
 
     aboutEl.textContent = res.about || "No bio yet";
     aboutEl.classList.toggle("empty-state", !res.about);
+    
+    showToast("Bio updated successfully!", "success");
 
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    showToast(err.message || "Failed to update bio", "error");
   }
 
   editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
@@ -434,9 +442,12 @@ profileImageInput?.addEventListener("change", async () => {
     if (nextImage) {
       imageEl.src = nextImage;
     }
+    
+    showToast("Profile image updated!", "success");
+    
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    showToast(err.message || "Failed to upload image", "error");
 
   } finally {
     if (profileImageInput) {
@@ -448,4 +459,3 @@ profileImageInput?.addEventListener("change", async () => {
     }
   }
 });
-
