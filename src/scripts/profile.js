@@ -168,6 +168,7 @@ function formatStatus(status) {
   if (status === "pending") return "Pending";
   if (status === "accepted") return "Accepted";
   if (status === "rejected") return "Rejected";
+  if (status === "cancelled") return "Canceled";
   return status;
 }
 
@@ -175,6 +176,7 @@ function getStatusClass(status) {
   if (status === "pending") return "badge-pending";
   if (status === "accepted") return "badge-accepted";
   if (status === "rejected") return "badge-rejected";
+  if (status === "cancelled") return "badge-rejected";
   return "";
 }
 
@@ -191,7 +193,9 @@ function renderTrades(trades, currentUserId) {
 
   const activeTrades = trades.filter((t) => t.status === "pending");
 
-  const completedTrades = trades.filter((t) => t.status === "accepted" || t.status === "rejected");
+  const completedTrades = trades.filter(
+    (t) => t.status === "accepted" || t.status === "rejected" || t.status === "cancelled",
+  );
 
   localStorage.setItem("seenFinishedTrades", completedTrades.length);
 
@@ -275,7 +279,7 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
 
       rejectBtn?.addEventListener("click", (e) => {
         e.stopPropagation();
-        handleTradeStatusUpdate(trade._id, "rejected");
+        handleTradeStatusUpdate(trade._id, isRequester ? "cancelled" : "rejected");
       });
     }
 
@@ -288,7 +292,8 @@ async function handleTradeStatusUpdate(tradeId, status) {
     await updateTradeStatus(tradeId, status);
     await initProfile();
 
-    showToast(`Trade ${status} successfully!`, "success");
+    const statusLabel = status === "cancelled" ? "canceled" : status;
+    showToast(`Trade ${statusLabel} successfully!`, "success");
   } catch (err) {
     showToast(err.message || "Failed to update trade", "error");
   }
