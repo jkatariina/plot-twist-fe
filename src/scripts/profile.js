@@ -32,7 +32,7 @@ async function initProfile() {
     const trades = await getTrades(token);
 
     const hiddenPlantIds = trades
-.filter(t => t.status === "completed")
+      .filter(t => t.status === "completed")
       .map(t => t.product?._id);
 
     const visiblePlants = plants.filter((p) => !hiddenPlantIds.includes(p._id));
@@ -254,6 +254,13 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
       ${
         trade.status === "pending"
           ? `
+          ${!isRequester ? `
+            <div class="meeting-setup">
+              <label for="time-${trade._id}">Meeting time:</label>
+              <input type="datetime-local" id="time-${trade._id}" class="meeting-time-input" />
+            </div>
+          ` : ""}
+          
           <div class="trade-actions">
             ${!isRequester ? `<button type="button" class="accept-trade-btn">Accept</button>` : ""}
             <button type="button" class="reject-trade-btn">
@@ -282,9 +289,33 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
       const acceptBtn = card.querySelector(".accept-trade-btn");
       const rejectBtn = card.querySelector(".reject-trade-btn");
 
-      acceptBtn?.addEventListener("click", (e) => {
+acceptBtn?.addEventListener("click", (e) => {
         e.stopPropagation();
-        handleTradeStatusUpdate(trade._id, "accepted");
+        
+        let extraData = {};
+        
+        if (!isRequester) {
+            const timeInput = card.querySelector(`#time-${trade._id}`);
+            const meetingTime = timeInput?.value;
+            
+            if (!meetingTime) {
+                showToast("Please select a meeting time!", "error");
+                return;
+            }
+            
+            const meetingPlace = trade.product?.coordinates;
+            
+            extraData = { 
+                // Omvandlar datumet till exakt det format Mongoose älskar!
+                meetingTime: new Date(meetingTime).toISOString(), 
+                meetingPlace: meetingPlace 
+            };
+        }
+
+        // Titta i din konsol när du klickar! Är allt med?
+        console.log("Detta skickas till backend:", { status: "accepted", ...extraData });
+
+        handleTradeStatusUpdate(trade._id, "accepted", extraData);
       });
 
       rejectBtn?.addEventListener("click", (e) => {
@@ -298,9 +329,10 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
 
 }
 
-async function handleTradeStatusUpdate(tradeId, status) {
+// UPPDATERAD FUNKTION! Tar nu emot extraData
+async function handleTradeStatusUpdate(tradeId, status, extraData = {}) {
   try {
-    await updateTradeStatus(tradeId, status);
+    await updateTradeStatus(tradeId, status, extraData);
     await initProfile();
 
     const statusLabel = status === "cancelled" ? "canceled" : status;

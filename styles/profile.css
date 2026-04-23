@@ -513,3 +513,45 @@
   outline: 2px solid #8fb89b;
   outline-offset: 2px;
 }
+
+/* --- MEETING SETUP (Vid Trade Accept) --- */
+
+.meeting-setup {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #dceccf; /* Linjen som delar av kortet */
+}
+
+.meeting-setup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--color-text);
+}
+
+.meeting-time-input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #dceccf;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background: white;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meeting-time-input:focus {
+  border-color: #2f4f2f;
+  box-shadow: 0 0 0 3px rgba(220, 236, 207, 0.6);
+}
+
+/* Smart logik: Om knapparna kommer direkt efter datumväljaren, 
+   ta bort deras marginal och topp-linje så det smälter ihop snyggt! */
+.meeting-setup + .trade-actions {
+  border-top: none;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
