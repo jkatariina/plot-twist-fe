@@ -1,6 +1,7 @@
 import { createPlant } from "../utils/addPlantApi.js";
 import { isLoggedIn } from "../state/authState.js";
 import { geocodeAddress } from "../utils/mapApi.js";
+import { showToast } from "../utils/toastify.js";
 
 // form
 const form = document.getElementById("addPlantForm");
@@ -19,13 +20,9 @@ const closeAuthModalBtn = document.getElementById("closeAuthModal");
 if (imageInput && fileDisplay) {
   imageInput.addEventListener("change", () => {
     const file = imageInput.files?.[0];
-
     fileDisplay.value = file ? file.name : "";
   });
 }
-
-// message
-let formMessage = document.getElementById("addPlantMessage");
 
 // leaflet 
 const map = L.map("addPlantMap").setView([59.3293, 18.0686], 12);
@@ -57,7 +54,6 @@ map.on("click", (e) => {
   }
 });
 
-
 const addressInput = document.getElementById("plant-address");
 const searchBtn = document.getElementById("searchAddressBtn");
 
@@ -79,24 +75,9 @@ searchBtn?.addEventListener("click", async () => {
     }
 
   } catch (err) {
-    setFormMessage("Could not find that address.");
+    showToast("Could not find that address.", "error");
   }
 });
-
-
-// form message
-function setFormMessage(message) {
-  if (!formMessage) return;
-
-  if (!message) {
-    formMessage.textContent = "";
-    formMessage.hidden = true;
-    return;
-  }
-
-  formMessage.textContent = message;
-  formMessage.hidden = false;
-}
 
 function openAuthModal() {
   authModal?.classList.remove("hidden");
@@ -120,7 +101,6 @@ document.addEventListener("keydown", (e) => {
 form?.addEventListener("submit", async (event) => {
 
   event.preventDefault();
-  setFormMessage("");
 
   if (!isLoggedIn()) {
     openAuthModal();
@@ -135,17 +115,17 @@ form?.addEventListener("submit", async (event) => {
   const description = descriptionInput?.value?.trim();
 
   if (!name || !description || !lightRequirements) {
-    setFormMessage("Please fill in all required fields.");
+    showToast("Please fill in all required fields.", "error");
     return;
   }
 
   if (!imageFile) {
-    setFormMessage("Please select an image file.");
+    showToast("Please select an image file.", "error");
     return;
   }
 
   if (!selectedCoordinates) {
-    setFormMessage("Please select a location on the map.");
+    showToast("Please select a location on the map.", "error");
     return;
   }
 
@@ -160,10 +140,15 @@ form?.addEventListener("submit", async (event) => {
 
   try {
     await createPlant(token, plantData);
-    window.location.href = "/profile.html";
+    
+    showToast("Plant added successfully!", "success");
+    setTimeout(() => {
+        window.location.href = "/profile.html";
+    }, 1500);
+
   } catch (err) {
     console.error(err);
-    setFormMessage(err.message || "Something went wrong.");
+    showToast(err.message || "Something went wrong.", "error");
   } finally {
     submitBtn.disabled = false;
   }

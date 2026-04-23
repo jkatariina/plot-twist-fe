@@ -14,7 +14,7 @@ export async function login(email, password) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.message || "Wrong email or password");
     }
 
     return data;
