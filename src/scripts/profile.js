@@ -19,11 +19,9 @@ const token = localStorage.getItem("accessToken");
 
 const loader = document.getElementById("pageLoader");
 
-
 if (!token) {
   window.location.href = "/login.html";
 }
-
 
 // init profile
 async function initProfile() {
@@ -33,18 +31,15 @@ async function initProfile() {
     const trades = await getTrades(token);
 
     const hiddenPlantIds = trades
-      .filter(t => t.status === "accepted" || t.status === "completed")
-      .map(t => t.product?._id);
+      .filter((t) => t.status === "accepted" || t.status === "completed")
+      .map((t) => t.product?._id);
 
-    const visiblePlants = plants.filter(p =>
-      !hiddenPlantIds.includes(p._id)
-    );
+    const visiblePlants = plants.filter((p) => !hiddenPlantIds.includes(p._id));
 
-renderProfile(user, visiblePlants);
-    renderTrades(trades);
+    renderProfile(user, visiblePlants);
+    renderTrades(trades, user._id);
 
     hideLoader();
-
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -53,7 +48,7 @@ renderProfile(user, visiblePlants);
 
 initProfile();
 
-// render profile 
+// render profile
 function renderProfile(user, plants = []) {
   nameEl.textContent = user.name || "Unknown";
   emailEl.textContent = user.email || "";
@@ -71,13 +66,10 @@ function renderProfile(user, plants = []) {
 
   plantCountBadge.textContent = `${plants.length} plants`;
 
-  userStatusBadge.textContent = user.verified
-    ? "Verified swapper"
-    : "Unverified";
+  userStatusBadge.textContent = user.verified ? "Verified swapper" : "Unverified";
 
   renderPlants(plants);
 }
-
 
 function cleanImage(url) {
   if (!url) return null;
@@ -134,7 +126,7 @@ function renderPlants(plants) {
       </div>
     `;
 
-//  delete plant
+    //  delete plant
     const deleteBtn = card.querySelector(".delete-plant-btn");
 
     if (deleteBtn) {
@@ -149,13 +141,10 @@ function renderPlants(plants) {
 
           card.remove();
 
-          const currentCount =
-            parseInt(plantCountBadge.textContent) || plants.length;
+          const currentCount = parseInt(plantCountBadge.textContent) || plants.length;
 
           plantCountBadge.textContent = `${currentCount - 1} plants`;
-
-        } 
-        catch (err) {
+        } catch (err) {
           console.error(err);
           alert(err.message);
         }
@@ -186,10 +175,8 @@ function getStatusClass(status) {
   return "";
 }
 
-
-//active & completed trades 
-function renderTrades(trades) {
-
+//active & completed trades
+function renderTrades(trades, currentUserId) {
   activeTradesContainer.innerHTML = "";
   completedTradesContainer.innerHTML = "";
 
@@ -199,18 +186,15 @@ function renderTrades(trades) {
     return;
   }
 
-  const activeTrades = trades.filter(t => t.status === "pending");
+  const activeTrades = trades.filter((t) => t.status === "pending");
 
-  const completedTrades = trades.filter(
-    t => t.status === "accepted" || t.status === "rejected"
-  );
+  const completedTrades = trades.filter((t) => t.status === "accepted" || t.status === "rejected");
 
-  renderTradeList(activeTrades, activeTradesContainer, "No active trades");
-  renderTradeList(completedTrades, completedTradesContainer, "No completed trades");
+  renderTradeList(activeTrades, activeTradesContainer, "No active trades", currentUserId);
+  renderTradeList(completedTrades, completedTradesContainer, "No completed trades", currentUserId);
 }
 
-
-function renderTradeList(trades, container, emptyText) {
+function renderTradeList(trades, container, emptyText, currentUserId) {
   container.innerHTML = "";
 
   if (!trades.length) {
@@ -218,11 +202,11 @@ function renderTradeList(trades, container, emptyText) {
     return;
   }
 
-trades.forEach(trade => {
-  const card = document.createElement("div");
-  card.classList.add("trade-card");
+  trades.forEach((trade) => {
+    const card = document.createElement("div");
+    card.classList.add("trade-card");
 
-  card.innerHTML = `
+    card.innerHTML = `
     <div class="trade-content">
 
       <small>
@@ -247,44 +231,51 @@ trades.forEach(trade => {
         </p>
       </div>
 
-      ${trade.status === "pending"
-        ? `
+      ${
+        trade.status === "pending"
+          ? `
           <div class="trade-actions">
-            <button type="button" class="accept-trade-btn">Accept</button>
-            <button type="button" class="reject-trade-btn">Reject</button>
+            ${
+              trade.requester?._id !== currentUserId
+                ? `<button type="button" class="accept-trade-btn">Accept</button>`
+                : ""
+            }
+            <button type="button" class="reject-trade-btn">
+              ${trade.requester?._id === currentUserId ? "Cancel" : "Reject"}
+            </button>
           </div>
         `
-        : ""
+          : ""
       }
 
     </div>
   `;
 
-  const content = card.querySelector(".trade-content");
+    const content = card.querySelector(".trade-content");
 
-  content.addEventListener("click", (e) => {
-    e.stopPropagation();
+    content.addEventListener("click", (e) => {
+      e.stopPropagation();
 
-  card.classList.toggle("open");
+      card.classList.toggle("open");
+    });
+
+    if (trade.status === "pending") {
+      const acceptBtn = card.querySelector(".accept-trade-btn");
+      const rejectBtn = card.querySelector(".reject-trade-btn");
+
+      acceptBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleTradeStatusUpdate(trade._id, "accepted");
+      });
+
+      rejectBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleTradeStatusUpdate(trade._id, "rejected");
+      });
+    }
+
+    container.appendChild(card);
   });
-
-  if (trade.status === "pending") {
-    const acceptBtn = card.querySelector(".accept-trade-btn");
-    const rejectBtn = card.querySelector(".reject-trade-btn");
-
-    acceptBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      handleTradeStatusUpdate(trade._id, "accepted");
-    });
-
-    rejectBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      handleTradeStatusUpdate(trade._id, "rejected");
-    });
-  }
-
-  container.appendChild(card);
-});
 }
 
 async function handleTradeStatusUpdate(tradeId, status) {
@@ -367,8 +358,7 @@ document.addEventListener("keydown", async (e) => {
   }
 });
 
-
-//edit about 
+//edit about
 let isEditingAbout = false;
 
 editAboutBtn.addEventListener("click", async () => {
@@ -390,12 +380,11 @@ editAboutBtn.addEventListener("click", async () => {
 
   try {
     const res = await updateProfile(token, {
-      about: input.value
+      about: input.value,
     });
 
     aboutEl.textContent = res.about || "No bio yet";
     aboutEl.classList.toggle("empty-state", !res.about);
-
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -404,7 +393,6 @@ editAboutBtn.addEventListener("click", async () => {
   editAboutBtn.innerHTML = `<i class="fa-solid fa-pen"></i>`;
   isEditingAbout = false;
 });
-
 
 //edit profile image
 editImageBtn?.addEventListener("click", () => {
@@ -435,7 +423,6 @@ profileImageInput?.addEventListener("change", async () => {
   } catch (err) {
     console.error(err);
     alert(err.message);
-
   } finally {
     if (profileImageInput) {
       profileImageInput.value = "";
@@ -446,4 +433,3 @@ profileImageInput?.addEventListener("change", async () => {
     }
   }
 });
-
