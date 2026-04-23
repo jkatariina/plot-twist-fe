@@ -158,6 +158,7 @@ async function loadPlants() {
 
         renderSidebar(visiblePlants);
         renderMarkers(visiblePlants);
+        map.invalidateSize();
         hideLoader();
 
     } catch (err) {
@@ -191,6 +192,10 @@ async function syncPlants() {
 
 
 syncPlants();
+
+window.addEventListener("resize", () => {
+    map.invalidateSize();
+});
 
 // find location 
 map.locate({

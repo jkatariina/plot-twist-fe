@@ -32,8 +32,8 @@ async function initProfile() {
     const trades = await getTrades(token);
 
     const hiddenPlantIds = trades
-      .filter((t) => t.status === "accepted" || t.status === "completed")
-      .map((t) => t.product?._id);
+.filter(t => t.status === "completed")
+      .map(t => t.product?._id);
 
     const visiblePlants = plants.filter((p) => !hiddenPlantIds.includes(p._id));
 
@@ -111,19 +111,24 @@ function renderPlants(plants) {
           : ""
       }
 
-      <button class="delete-plant-btn">X</button>
-
       <div class="plant-content">
         <strong>${plant.name || "Unnamed plant"}</strong>
         <p>${plant.description || "No description"}</p>
 
         <div class="plant-details">
+          ${
+            cleanImage(plant.image)
+              ? `<img class="plant-preview-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+              : ""
+          }
           <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
           <p>
             <strong>Created at:</strong>
             ${plant.createdAt ? new Date(plant.createdAt).toLocaleDateString() : ""}
           </p>
         </div>
+
+        <button class="delete-plant-btn">Delete</button>
       </div>
     `;
 
@@ -235,6 +240,8 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
         <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
       </p>
 
+      <button type="button" class="trade-info-btn">More info</button>
+
       <div class="trade-details">
         <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
         <p>
@@ -260,13 +267,16 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
     </div>
   `;
 
-    const content = card.querySelector(".trade-content");
+  const content = card.querySelector(".trade-content");
+  const infoBtn = card.querySelector(".trade-info-btn");
 
-    content.addEventListener("click", (e) => {
-      e.stopPropagation();
+  function toggleTradeDetails(e) {
+    e.stopPropagation();
+    card.classList.toggle("open");
+  }
 
-      card.classList.toggle("open");
-    });
+  content.addEventListener("click", toggleTradeDetails);
+  infoBtn.addEventListener("click", toggleTradeDetails);
 
     if (trade.status === "pending") {
       const acceptBtn = card.querySelector(".accept-trade-btn");
@@ -283,8 +293,9 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
       });
     }
 
-    container.appendChild(card);
-  });
+  container.appendChild(card);
+});
+
 }
 
 async function handleTradeStatusUpdate(tradeId, status) {
