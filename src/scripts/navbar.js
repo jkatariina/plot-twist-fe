@@ -1,4 +1,5 @@
-import { isLoggedIn, logout } from "../state/authState.js";
+import { getMyUserId, isLoggedIn, logout } from "../state/authState.js";
+import { getTrades } from "../utils/tradesApi.js";
 
 const loginItem = document.getElementById("loginItem");
 const logoutItem = document.getElementById("logoutItem");
@@ -20,6 +21,59 @@ function updateAuthUI() {
         profileItem.style.display = "none";
     }
 }
+
+async function updateProfileBadge() {
+    if (!isLoggedIn()) return;
+
+    try {
+        const myUserId = getMyUserId()
+
+        const trades = await getTrades();
+        console.log(trades)
+
+        const pendingCount = trades.filter(t => {
+            const receiverId = t.receiver._id || t.receiver; 
+            
+            return t.status === "pending" && receiverId === myUserId;
+        }).length;
+
+        const finishedTrades = trades.filter(t => t.status === "accepted" || t.status === "rejected");
+
+        const seenFinishedCount = parseInt(localStorage.getItem("seenFinishedTrades") || "0");
+
+        let newFinishedCount = finishedTrades.length - seenFinishedCount;
+        
+        if (newFinishedCount < 0) newFinishedCount = 0; 
+
+        // Totala antalet notiser (Alla pending + Nya avslutade)
+        const totalNotifications = pendingCount + newFinishedCount;
+
+        const profileLink = document.querySelector('a[href="/profile.html"]');
+        
+        if (profileLink) {
+            let badge = profileLink.querySelector(".notification-badge");
+
+            if (totalNotifications > 0) {
+                // Lägg till brickan
+                profileLink.classList.add("nav-profile-link");
+                
+                if (!badge) {
+                    badge = document.createElement("span");
+                    badge.classList.add("notification-badge");
+                    profileLink.appendChild(badge);
+                }
+                badge.textContent = totalNotifications;
+            } else {
+                // Om totalNotifications är 0, ta bort notisen helt (så den försvinner när du läst allt)
+                if (badge) badge.remove();
+            }
+        }
+    } catch (error) {
+        console.error("Kunde inte hämta notiser till navbaren:", error);
+    }
+}
+
+updateProfileBadge();
 
 logoutBtn?.addEventListener("click", (e) => {
     e.preventDefault();
