@@ -148,26 +148,21 @@
   z-index: 1;
 }
 
-.plant-card:hover {
-  transform: translateY(-3px);
-}
-
 .plant-image {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 8px;
   object-fit: cover;
-  transition: all 0.3s ease;
 }
 
-.plant-card.open .plant-image {
-  width: 100%;
-  height: 200px;
-  border-radius: 12px;
+.plant-card:hover > .plant-image,
+.plant-card.open > .plant-image {
+  display: none;
 }
 
 .plant-content {
   flex: 1;
+  min-width: 0;
 }
 
 .plant-details {
@@ -180,7 +175,16 @@
   border-top: 1px solid #dceccf;
 }
 
+.plant-preview-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+}
 
+
+.plant-card:hover .plant-details,
 .plant-card.open .plant-details {
   max-height: 500px;
   opacity: 1;
@@ -209,8 +213,11 @@
   transition: 0.2s ease;
 }
 
+.trade-card {
+  position: relative;
+}
 
-.plant-card:hover,
+
 .activity-card:hover,
 .trade-card:hover {
   transform: translateY(-3px);
@@ -404,6 +411,30 @@
   cursor: pointer;
 }
 
+.trade-info-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid #dceccf;
+  border-radius: 8px;
+  background: white;
+  color: #1e3d2f;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.trade-info-btn:hover {
+  background: #eef6e9;
+}
+
+.trade-info-btn:focus-visible {
+  outline: 2px solid #8fb89b;
+  outline-offset: 2px;
+}
+
 .trade-actions {
   display: flex;
   gap: 0.5rem;
@@ -454,26 +485,31 @@
 }
 
 .delete-plant-btn {
-  position: absolute;
-  top: 2px;
-  right: -2px;
-  width: 26px;
-  height: 26px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
+  display: block;
+  margin: 0.8rem 0 0 auto;
+  border: 1px solid #f0dddd;
+  border-radius: 8px;
+  background: white;
+  color: #7a2626;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  opacity: 0;
+  opacity: 1;
   transition: 0.2s ease;
-  pointer-events: none;
-  background: transparent;
-  z-index: 10;
+  pointer-events: auto;
 }
 
 .plant-card:hover .delete-plant-btn {
   opacity: 1;
-  transform: scale(1);
   pointer-events: auto;
+}
+
+.delete-plant-btn:hover {
+  background: #f8eeee;
+}
+
+.delete-plant-btn:focus-visible {
+  outline: 2px solid #8fb89b;
+  outline-offset: 2px;
 }
