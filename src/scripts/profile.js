@@ -145,11 +145,9 @@ function renderPlants(plants) {
           const currentCount = parseInt(plantCountBadge.textContent) || plants.length;
 
           plantCountBadge.textContent = `${currentCount - 1} plants`;
-          
-          showToast("Plant deleted successfully!", "success");
 
-        } 
-        catch (err) {
+          showToast("Plant deleted successfully!", "success");
+        } catch (err) {
           console.error(err);
           showToast(err.message || "Failed to delete plant", "error");
         }
@@ -197,8 +195,8 @@ function renderTrades(trades, currentUserId) {
 
   localStorage.setItem("seenFinishedTrades", completedTrades.length);
 
-  renderTradeList(activeTrades, activeTradesContainer, "No active trades");
-  renderTradeList(completedTrades, completedTradesContainer, "No completed trades");
+  renderTradeList(activeTrades, activeTradesContainer, "No active trades", currentUserId);
+  renderTradeList(completedTrades, completedTradesContainer, "No completed trades", currentUserId);
 }
 
 function renderTradeList(trades, container, emptyText, currentUserId) {
@@ -210,6 +208,10 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
   }
 
   trades.forEach((trade) => {
+    const requesterId = String(trade.requester?._id || trade.requester || "");
+    const viewerId = String(currentUserId || "");
+    const isRequester = requesterId && viewerId && requesterId === viewerId;
+
     const card = document.createElement("div");
     card.classList.add("trade-card");
 
@@ -242,13 +244,9 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
         trade.status === "pending"
           ? `
           <div class="trade-actions">
-            ${
-              trade.requester?._id !== currentUserId
-                ? `<button type="button" class="accept-trade-btn">Accept</button>`
-                : ""
-            }
+            ${!isRequester ? `<button type="button" class="accept-trade-btn">Accept</button>` : ""}
             <button type="button" class="reject-trade-btn">
-              ${trade.requester?._id === currentUserId ? "Cancel" : "Reject"}
+              ${isRequester ? "Cancel" : "Reject"}
             </button>
           </div>
         `
@@ -289,7 +287,7 @@ async function handleTradeStatusUpdate(tradeId, status) {
   try {
     await updateTradeStatus(tradeId, status);
     await initProfile();
-    
+
     showToast(`Trade ${status} successfully!`, "success");
   } catch (err) {
     showToast(err.message || "Failed to update trade", "error");
@@ -395,9 +393,8 @@ editAboutBtn.addEventListener("click", async () => {
 
     aboutEl.textContent = res.about || "No bio yet";
     aboutEl.classList.toggle("empty-state", !res.about);
-    
-    showToast("Bio updated successfully!", "success");
 
+    showToast("Bio updated successfully!", "success");
   } catch (err) {
     console.error(err);
     showToast(err.message || "Failed to update bio", "error");
@@ -433,13 +430,11 @@ profileImageInput?.addEventListener("change", async () => {
     if (nextImage) {
       imageEl.src = nextImage;
     }
-    
+
     showToast("Profile image updated!", "success");
-    
   } catch (err) {
     console.error(err);
     showToast(err.message || "Failed to upload image", "error");
-
   } finally {
     if (profileImageInput) {
       profileImageInput.value = "";
