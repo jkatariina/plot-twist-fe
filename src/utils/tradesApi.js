@@ -47,10 +47,10 @@ async function getErrorMessage(res) {
     }
 }
 
-export async function updateTradeStatus(tradeId, status) {
+export async function updateTradeStatus(tradeId, status, extraData = {}) {
     const res = await apiFetch(`${getBaseUrl()}/trades/${tradeId}`, {
         method: "PUT",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, ...extraData }),
     });
 
     if (!res.ok) {
