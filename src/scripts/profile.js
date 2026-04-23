@@ -114,11 +114,11 @@ function renderPlants(plants) {
         <p>${plant.description || "No description"}</p>
 
         <div class="plant-details">
-          ${
-            cleanImage(plant.image)
-              ? `<img class="plant-preview-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
-              : ""
-          }
+            ${
+              cleanImage(plant.image)
+                ? `<img class="plant-preview-image" src="${cleanImage(plant.image)}" alt="${plant.name}" />`
+                : ""
+            }
           <p><strong>Light requirements:</strong> ${plant.lightRequirements}</p>
           <p>
             <strong>Created at:</strong>
@@ -158,9 +158,13 @@ function renderPlants(plants) {
     }
 
     // toggle card
-    card.addEventListener("click", () => {
+  card.addEventListener("click", () => {
+    const isTouchDevice = window.matchMedia("(hover: none)").matches;
+
+    if (isTouchDevice) {
       card.classList.toggle("open");
-    });
+    }
+  });
 
     plantsContainer.appendChild(card);
   });
@@ -238,7 +242,9 @@ function renderTradeList(trades, container, emptyText, currentUserId) {
         <strong>To:</strong> ${trade.receiver?.name || "Unknown"}
       </p>
 
-      <button type="button" class="trade-info-btn">More info</button>
+      <button class="trade-info-btn" aria-label="Show more">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
 
       <div class="trade-details">
         <img class="trade-image" src="${trade.product?.image}" alt="plant image"/>
