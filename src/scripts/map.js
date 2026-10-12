@@ -1,4 +1,4 @@
-import { getPlants } from "../utils/mapApi.js";
+import { getPlants, addBaseLayer } from "../utils/mapApi.js";
 import { createTrade, getTrades } from "../utils/tradesApi.js";
 import { showToast } from "../utils/toastify.js";
 
@@ -8,9 +8,7 @@ const loader = document.getElementById("pageLoader");
 const map = L.map("map").setView([59.3293, 18.0686], 12);
 
 // tile layer
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: "&copy; OpenStreetMap & CartoDB",
-}).addTo(map);
+addBaseLayer(map);
 
 // icon
 const plantIcon = L.icon({

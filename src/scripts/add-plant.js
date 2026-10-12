@@ -1,6 +1,6 @@
 import { createPlant } from "../utils/addPlantApi.js";
 import { isLoggedIn } from "../state/authState.js";
-import { geocodeAddress } from "../utils/mapApi.js";
+import { geocodeAddress, addBaseLayer } from "../utils/mapApi.js";
 import { showToast } from "../utils/toastify.js";
 
 // form
@@ -27,9 +27,7 @@ if (imageInput && fileDisplay) {
 // leaflet 
 const map = L.map("addPlantMap").setView([59.3293, 18.0686], 12);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-  attribution: "&copy; OpenStreetMap & CartoDB",
-}).addTo(map);
+addBaseLayer(map);
 
 // icon
 const plantIcon = L.icon({

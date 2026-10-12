@@ -1,4 +1,5 @@
 import { getBaseUrl } from "../utils/api.js";
+import { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 
 export async function getPlants() {
     const url = new URL("products", getBaseUrl());
@@ -26,4 +27,13 @@ export async function geocodeAddress(address) {
         lat: parseFloat(data[0].lat),
         lng: parseFloat(data[0].lon),
     };
+}
+
+// OpenFreeMap "positron" vector style (same light look as the old CARTO light_all, no API key)
+// leaflet/maplibre-gl are resolved through the import map in map.html and add-plant.html
+// attribution is read from the style by maplibre-gl-leaflet
+export function addBaseLayer(map) {
+    return maplibreGL({
+        style: "https://tiles.openfreemap.org/styles/positron",
+    }).addTo(map);
 }
